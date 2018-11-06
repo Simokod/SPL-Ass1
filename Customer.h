@@ -14,7 +14,7 @@ public:
     int getId() const;
 private:
     const std::string name;
-    const int id
+    const int id;
 };
 
 
