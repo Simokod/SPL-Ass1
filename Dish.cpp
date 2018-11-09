@@ -7,21 +7,17 @@ using namespace std;
                                                                         type(d_type) {}
 
     int Dish::getId() const {
-        const int &_id = id;
-        return _id;
+        return id;
     }
 
     string Dish::getName() const {
-        const string &_name = name;
-        return _name;
+        return name;
     }
 
     int Dish::getPrice() const {
-        const int &_price = price;
-        return _price;
+        return price;
     }
 
     DishType Dish::getType() const {
-        const DishType &_type = type;
-        return _type;
+        return type;
     }
