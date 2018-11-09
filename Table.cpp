@@ -2,16 +2,25 @@
 // Created by simo on 11/7/18.
 //
 
+#include <vector>
 #include "Table.h"
-
+#include "Customer.h"
 using namespace std;
 
-
-Table::Table(int t_capacity) {
-    capacity = t_capacity;
-    open = false;
+// Table constructor
+Table::Table(int t_capacity): capacity(t_capacity), open(false) {}
+// Table copy constructor
+Table::Table(Table &other): capacity(other.getCapacity()), open(other.isOpen()) {
+    customersList=other.getCustomers();
+    orderList=other.getOrders();
 }
+// Table operator=
+Table& Table::operator=(const Table &other) {
+    if(this==&other)
+        return *this;
+    clear();
 
+}
 int Table::getCapacity() const { return capacity; }
 
 void Table::addCustomer(Customer *customer) {
@@ -45,7 +54,7 @@ int Table::getBill() {
         bill+=orderList.at(i).first;
     return bill;
 }
-
+// Table destructor
 Table::~Table() { clear(); }
 
 void Table::clear() {

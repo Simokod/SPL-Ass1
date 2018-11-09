@@ -33,6 +33,7 @@ public:
     std::vector<int> order(const std::vector<Dish> &menu);
     std::string toString() const;
 private:
+    bool ordered;
 };
 
 
@@ -42,15 +43,17 @@ public:
     std::vector<int> order(const std::vector<Dish> &menu);
     std::string toString() const;
 private:
+    bool ordered;
 };
 
 
 class AlchoholicCustomer : public Customer {
 public:
-	AlchoholicCustomer(std::string name, int id)
+	AlchoholicCustomer(std::string name, int id);
     std::vector<int> order(const std::vector<Dish> &menu);
     std::string toString() const;
 private:
+    int lastOrder;
 };
 
 

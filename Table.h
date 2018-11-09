@@ -23,12 +23,15 @@ public:
     bool isOpen();
 
     virtual ~Table();
+    Table(Table &table);
+    Table& operator=(const Table &other);
 private:
     int capacity;
     bool open;
     std::vector<Customer*> customersList;
     std::vector<OrderPair> orderList; //A list of pairs for each order in a table - (customer_id, Dish)
 
+    std::vector<Customer>& copy();
     void clear();
 };
 

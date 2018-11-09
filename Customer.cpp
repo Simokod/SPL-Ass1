@@ -44,11 +44,15 @@ using namespace std;
         return s1+s2+s3;
     }
 //----------------------------------------------Cheap Customer--------------------------------------
-    CheapCustomer::CheapCustomer(string name, int id): Customer(name, id) {}
+    CheapCustomer::CheapCustomer(string name, int id): Customer(name, id), ordered(false) {}
 
     std::vector<int> CheapCustomer::order(const std::vector<Dish> &menu) {
         vector<int> orders;
-        orders.push_back(menu.begin()->getId());
+        if(!ordered)
+        {
+            orders.push_back(menu.begin()->getId());
+            ordered = true;
+        }
         return orders;
     }
 
@@ -60,11 +64,25 @@ using namespace std;
     }
 
 //----------------------------------------------Spicy Customer--------------------------------------
-    SpicyCustomer::SpicyCustomer(string name, int id): Customer(name, id) {}
+    SpicyCustomer::SpicyCustomer(string name, int id): Customer(name, id), ordered(false) {}
 
     std::vector<int> SpicyCustomer::order(const std::vector<Dish> &menu) {
         vector<int> orders;
-
+        if(!ordered)
+            for(int i=menu.size();i>=0;i--)
+                if(menu.at(i).getType()==SPC)
+                {
+                    orders.push_back(menu.at(i).getId());
+                    break;
+                }
+        else
+            for(int i=0;i<menu.size();i++)
+                if(menu.at(i).getType()==BVG)
+                {
+                    orders.push_back(menu.at(i).getId());
+                    break;
+                }
+        return orders;
     }
 
     string SpicyCustomer::toString() const {
@@ -75,9 +93,22 @@ using namespace std;
     }
 
 //----------------------------------------------Alchoholic Customer--------------------------------------
-    AlchoholicCustomer::AlchoholicCustomer(string name, int id): Customer(name, id) {}
+    AlchoholicCustomer::AlchoholicCustomer(string name, int id): Customer(name, id), lastOrder(-1) {}
 
-
+    std::vector<int> AlchoholicCustomer::order(const std::vector<Dish> &menu) {
+        vector<int> orders;
+        lastOrder++;
+        while(lastOrder<menu.size())
+        {
+            if(menu.at(lastOrder).getType()==ALC)
+            {
+                orders.push_back(menu.at(lastOrder).getId());
+                break;
+            }
+            lastOrder++;
+        }
+        return orders;
+    }
 
     string AlchoholicCustomer::toString() const {
         string s1=getName();
