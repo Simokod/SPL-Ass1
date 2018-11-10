@@ -23,6 +23,8 @@ private:
     std::vector<Table*> tables;
     std::vector<Dish> menu;
     std::vector<BaseAction*> actionsLog;
+    int readNumOfTables(int &index, const std::string &file);
+    void createTables(int &index, const std::string &file, int numOfTables);
 };
 
 #endif
