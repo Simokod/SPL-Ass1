@@ -31,7 +31,7 @@ private:
     std::vector<Customer*> customersList;
     std::vector<OrderPair> orderList; //A list of pairs for each order in a table - (customer_id, Dish)
 
-    std::vector<Customer>& copy();
+ //   std::vector<Customer>& copy();
     void clear();
 };
 

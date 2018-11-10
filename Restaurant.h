@@ -8,23 +8,28 @@
 #include "Action.h"
 
 
-class Restaurant{		
+class Restaurant{
 public:
 	Restaurant();
-    Restaurant(const std::string &configFilePath);
-    void start();
-    int getNumOfTables() const;
-    Table* getTable(int ind);
+	Restaurant(const std::string &configFilePath);
+	void start();
+	int getNumOfTables() const;
+	Table* getTable(int ind);
 	const std::vector<BaseAction*>& getActionsLog() const; // Return a reference to the history of actions
-    std::vector<Dish>& getMenu();
+	std::vector<Dish>& getMenu();
 
 private:
-    bool open;
-    std::vector<Table*> tables;
-    std::vector<Dish> menu;
-    std::vector<BaseAction*> actionsLog;
-    int readNumOfTables(int &index, const std::string &file);
-    void createTables(int &index, const std::string &file, int numOfTables);
+	bool open;
+	const int numOfTables;
+	std::vector<Table*> tables;
+	std::vector<Dish> menu;
+	std::vector<BaseAction*> actionsLog;
+	int readNumOfTables(int &index, const std::string &file);
+
+	void createTables(int &index, const std::string &file, int numOfTables);
+	void createMenu(int &i; const std::string &file);
+	dishType Restaurant::convert(string str);
+
 };
 
 #endif
