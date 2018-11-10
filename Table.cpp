@@ -12,8 +12,8 @@ Table::Table(int t_capacity): capacity(t_capacity), open(false) {}
 
 // Table copy constructor
 Table::Table(Table &other): capacity(other.getCapacity()), open(other.isOpen()) {
-    customersList=other.getCustomers();
-    orderList=other.getOrders();
+    customersList=other.customerList;
+    orderList=other.orderList;
 }
 // Table move constructor
 Table::Table(Table &&other): capacity(other.getCapacity()), open(other.isOpen()) {
