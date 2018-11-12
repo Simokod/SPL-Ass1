@@ -11,7 +11,7 @@ using namespace std;
 Table::Table(int t_capacity): capacity(t_capacity), open(false) {}
 
 // Table copy constructor
-Table::Table(Table &other): capacity(other.getCapacity()), open(other.isOpen()) {
+Table::Table(Table &other): capacity(other.capacity), open(other.open) {
     customersList=other.customerList;
     orderList=other.orderList;
 }

@@ -11,12 +11,17 @@
 class Restaurant{
 public:
 	Restaurant();
+    Restaurant(Restaurant &other);
+    Restaurant(Restaurant &&other);
 	Restaurant(const std::string &configFilePath);
 	void start();
 	int getNumOfTables() const;
-	Table* getTable(int ind);
 	const std::vector<BaseAction*>& getActionsLog() const; // Return a reference to the history of actions
 	std::vector<Dish>& getMenu();
+    Restaurant& operator=(const Restaurant &other);
+    Restaurant& operator=(const Restaurant &&other);
+    virtual ~Restaurant();
+
 
 private:
 	bool open;
@@ -29,6 +34,7 @@ private:
 	void createTables(int &index, const std::string &file, int numOfTables);
 	void createMenu(int &i; const std::string &file);
 	dishType Restaurant::convert(string str);
+    void  clear();
 
 };
 
