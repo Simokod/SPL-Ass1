@@ -58,6 +58,10 @@ Restaurant& Restaurant::operator=(Restaurant &&other){
     return *this;
 }
 
+// Restaurant destructor
+Restaurant::~Restaurant() { clear(); }
+
+
 //Getters
 std::vector<Dish>& Restaurant::getMenu() {
     return menu;
@@ -66,9 +70,48 @@ std::vector<Dish>& Restaurant::getMenu() {
 int Restaurant::getNumOfTables() const  {
     return numOfTables;
 }
+//------------------------------------------------------------- NOT FINISHED--------------------------------
+// opening the restaurant to the world!
+void Restaurant::start() {
+    cout << "Restaurant is now open!" << endl;
+    string s;
+    cin >> s;
+    while(s!="closeall")
+    {
+        Actions input=convertAct(s);
+    }
 
-// Restaurant destructor
-Restaurant::~Restaurant() { clear(); }
+}
+// converting input from the client to an action
+Actions Restaurant::convertAct(std::string str) {
+    string actionStr="";
+    int i=0;
+    while(str.at(i)!=' ')
+        actionStr+=str.at(i);
+    if(actionStr=="open")
+        return OPEN;
+    if(actionStr=="order")
+        return ORDER;
+    if(actionStr=="move")
+        return MOVE;
+    if(actionStr=="close")
+        return CLOSE;
+    if(actionStr=="closeall")
+        return CLOSEALL;
+    if(actionStr=="menu")
+        return MENU;
+    if(actionStr=="status")
+        return STATUS;
+    if(actionStr=="log")
+        return LOG;
+    if(actionStr=="backup")
+        return BACKUP;
+    if(actionStr=="restore")
+        return RESTORE;
+
+    return WRONG;
+}
+
 
 //Assistant functions
 void Restaurant::clear(){
@@ -83,12 +126,30 @@ void Restaurant::clear(){
     numOfTables=0;
     open=false;
 }
+// the function reads the config file and returns the number of tables in the restaurant
+int Restaurant::readNumOfTables(int &i, const string &file){
+    // skipping first line
+    if(file.at(i)=='#')
+        while(file.at(i)!='\n')
+            i++;
+    while(i=='\n') i++;     // going down empty lines
+    // getting number of tables from 2nd line
+    string numOfTables="";
+    while(file.at(i)!='\n') {
+        numOfTables+=file.at(i);
+        i++;
+    }
+    while(i=='\n') i++;    // going down empty lines
+    return stoi(numOfTables);
+}
 // filling the tables vector
 void Restaurant::createTables(int &i, const std::string &file, int numOfTables) {
     // skipping line of comment
-    while(file.at(i)!='\n')
-        i++;
-    i++;    // going down a line
+    if(file.at(i)=='#')
+        while(file.at(i)!='\n')
+            i++;
+    while(i=='\n') i++;    // going down empty lines
+
     for(int j=0;j<numOfTables;j++) {    // creating new tables and pushing them into the Tables vector
         string numOfPlaces = "";
         while (file.at(i) != ','){
@@ -100,13 +161,16 @@ void Restaurant::createTables(int &i, const std::string &file, int numOfTables) 
         i++;
     }
     i++;
+    while(i=='\n') i++;    // going down empty lines
 }
 // filling the menu vector
 void Restaurant::createMenu(int &i, const std::string &file){
     // skipping line of comment
-    while(file.at(i)!='\n')
-        i++;
-    i++;    // going down a line
+    if(file.at(i)=='#')
+        while(file.at(i)!='\n')
+            i++;
+    while(i=='\n') i++;    // going down empty lines
+
     int id=0;
     for( i ; i<file.size()-i;i++) {    // creating new menus and pushing them into the Menu vector
         string dishName="";
@@ -133,23 +197,9 @@ void Restaurant::createMenu(int &i, const std::string &file){
     }
 }
 
-// the function reads the config file and returns the number of tables in the restaurant
-int Restaurant::readNumOfTables(int &i, const string &file){
-    // skipping first line
-    while(file.at(i)!='\n')
-        i++;
-    i++;
-    // getting number of tables from 2nd line
-    string numOfTables="";
-    while(file.at(i)!='\n') {
-        numOfTables+=file.at(i);
-        i++;
-    }
-    i++;    // skipping '\n' char
-    return stoi(numOfTables);
-}
+
 // the function converts a given string to the corresponding dish type
-DishType Restaurant::convert(string str){
+DishType Restaurant::convert(std::string str) {
     if (str=="VEG")
         return VEG;
     if (str=="SPC")

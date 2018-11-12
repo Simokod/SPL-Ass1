@@ -8,6 +8,8 @@
 #include "Action.h"
 
 
+enum Actions{OPEN, ORDER, MOVE, CLOSE, CLOSEALL, MENU, STATUS, LOG, BACKUP, RESTORE, WRONG};
+
 class Restaurant{
 public:
     Restaurant();
@@ -33,8 +35,9 @@ private:
 
     void createTables(int &index, const std::string &file, int numOfTables);
     void createMenu(int &i, const std::string &file);
-    DishType Restaurant::convert(std::string str);
+    DishType convert(std::string str);
     void clear();
+    Actions convertAct(std::string str);
 
 };
 
