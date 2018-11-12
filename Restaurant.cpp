@@ -2,6 +2,7 @@
 // Created by simo on 11/9/18.
 //
 #include "Restaurant.h"
+#include "Dish.h"
 using namespace std;
 
 //Restaurant constructor
@@ -12,37 +13,33 @@ Restaurant::Restaurant(const std::string &configFilePath) {
     createMenu(index, configFilePath);
 }
 //Restaurant copy constructor
-Restaurant::Restaurant(Restaurant &other): open(other.open), numOfTables(other.numOfTables)
-{
-    menu=other.menu;
-    tables=other.tables;
-
-}
+Restaurant::Restaurant(const Restaurant &other): open(other.open), numOfTables(other.numOfTables), menu(other.menu),
+                                                             tables(other.tables) {}
 //Restaurant move constructor
-Restaurant::Restaurant(Restaurant &other): open(other.open), numOfTables(other.numOfTables)
+Restaurant::Restaurant(Restaurant &&other): open(other.open), numOfTables(other.numOfTables), menu(other.menu),
+                                            tables(other.tables)
 {
-    menu=other.menu;
-    tables=other.tables;
-    other.menu= nullptr;
-    other.table= nullptr;
-    other.open= false;
-    other.numOfTables=-0;
+    other.menu.clear();
+    other.menu.shrink_to_fit();
+    other.tables.clear();
+    other.tables.shrink_to_fit();
+    other.open = false;
+    other.numOfTables=0;
 }
 
 // Restaurant copy assignment operator
 Restaurant& Restaurant::operator=(const Restaurant &other){
-    if(this!=other) {
+    if(this!=&other) {
         clear();
         numOfTables=other.numOfTables;
-        open = other.open;
+        open=other.open;
         tables=other.tables;
         menu=other.menu;
-        numOfTables=other.numOfTables;
     }
     return *this;
 }
 // Restaurant move assignment operator
-Restaurant& Restaurant::operator=(const Restaurant &&other){
+Restaurant& Restaurant::operator=(Restaurant &&other){
     if(this!=&other) {
         clear();
         numOfTables=other.numOfTables;
@@ -50,20 +47,23 @@ Restaurant& Restaurant::operator=(const Restaurant &&other){
         tables=other.tables;
         menu=other.menu;
         numOfTables=other.numOfTables;
-        other.menu= nullptr;
-        other.table= nullptr;
-        other.open= false;
-        other.numOfTables=-0;
+
+        other.menu.clear();
+        other.menu.shrink_to_fit();
+        other.tables.clear();
+        other.tables.shrink_to_fit();
+        other.open = false;
+        other.numOfTables=0;
     }
     return *this;
 }
 
 //Getters
-vector<Dish>& getMenu(){
+std::vector<Dish>& Restaurant::getMenu() {
     return menu;
 }
 
-int getNumOfTables() const{
+int Restaurant::getNumOfTables() const  {
     return numOfTables;
 }
 
@@ -71,19 +71,19 @@ int getNumOfTables() const{
 Restaurant::~Restaurant() { clear(); }
 
 //Assistant functions
-private void Restaurant::clear(){
-    for(int i=0;i<menu.size();i++)
-        delete menu.at(i);
+void Restaurant::clear(){
     menu.clear();
+    menu.shrink_to_fit();
     for(int i=0;i<tables.size();i++)
+    {
         delete tables.at(i);
-    tables.clear();
+        tables.at(i) = nullptr;
+    }
+    tables.shrink_to_fit();
     numOfTables=0;
     open=false;
-    menu= nullptr;
-    tables= nullptr;
 }
-
+// filling the tables vector
 void Restaurant::createTables(int &i, const std::string &file, int numOfTables) {
     // skipping line of comment
     while(file.at(i)!='\n')
@@ -101,17 +101,18 @@ void Restaurant::createTables(int &i, const std::string &file, int numOfTables) 
     }
     i++;
 }
+// filling the menu vector
 void Restaurant::createMenu(int &i, const std::string &file){
     // skipping line of comment
     while(file.at(i)!='\n')
         i++;
     i++;    // going down a line
     int id=0;
-    while(file.at(i)!=null) {    // creating new menus and pushing them into the Menu vector
+    for( i ; i<file.size()-i;i++) {    // creating new menus and pushing them into the Menu vector
         string dishName="";
         while(file.at(i)!=','){
             dishName+=file.at(i);
-            i++
+            i++;
         }
         i++;
         string type="";
@@ -119,19 +120,20 @@ void Restaurant::createMenu(int &i, const std::string &file){
             type+=file.at(i);
             i++;
         }
-        dishType dType=convert(type);
+        DishType dType=convert(type);
         string price="";
         while(file.at(i)!=','){
             price+=file.at(i);
             i++;
         }
         int dPrice=stoi(price);
-        menu.push_back(new Dish(id,dishName,dPrice,dType));
+        menu.push_back(*new Dish(id,dishName,dPrice,dType));
         id++;
         i++;
     }
 }
 
+// the function reads the config file and returns the number of tables in the restaurant
 int Restaurant::readNumOfTables(int &i, const string &file){
     // skipping first line
     while(file.at(i)!='\n')
@@ -146,8 +148,8 @@ int Restaurant::readNumOfTables(int &i, const string &file){
     i++;    // skipping '\n' char
     return stoi(numOfTables);
 }
-
-dishType Restaurant::convert(string str){
+// the function converts a given string to the corresponding dish type
+DishType Restaurant::convert(string str){
     if (str=="VEG")
         return VEG;
     if (str=="SPC")
@@ -156,5 +158,4 @@ dishType Restaurant::convert(string str){
         return BVG;
     if (str=="ALC")
         return ALC;
-    return;
 }
