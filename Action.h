@@ -4,6 +4,11 @@
 #include <string>
 #include <iostream>
 #include "Customer.h"
+#include "Restaurant.h"
+#include "Table.h"
+
+
+
 
 enum ActionStatus{
     PENDING, COMPLETED, ERROR
@@ -35,7 +40,7 @@ public:
     std::string toString() const;
 private:
 	const int tableId;
-	const std::vector<Customer *> customers;
+	std::vector<Customer *> customers;
 };
 
 
