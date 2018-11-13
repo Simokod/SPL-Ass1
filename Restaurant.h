@@ -8,6 +8,8 @@
 #include "Action.h"
 
 
+enum Actions{OPEN, ORDER, MOVE, CLOSE, CLOSEALL, MENU, STATUS, LOG, BACKUP, RESTORE, WRONG};
+
 class Restaurant{
 public:
     Restaurant();
@@ -26,16 +28,19 @@ public:
 private:
     bool open;
     int numOfTables;
+    int customersId;
     std::vector<Table*> tables;
     std::vector<Dish> menu;
     std::vector<BaseAction*> actionsLog;
-    int readNumOfTables(int &index, const std::string &file);
 
+    int readNumOfTables(int &index, const std::string &file);
     void createTables(int &index, const std::string &file, int numOfTables);
     void createMenu(int &i, const std::string &file);
-    DishType Restaurant::convert(std::string str);
     void clear();
+    DishType convertDish(std::string str);
+    Actions convertAct(std::string str);
 
+    OpenTable& actionOpenTable(std::string s);
 };
 
 #endif
