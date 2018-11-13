@@ -65,7 +65,16 @@ Customer* Table::getCustomer(int id) {
         if(customersList.at(i)->getId()==id)
             return customersList.at(i);
 }
-
+// takes an order from each customer on the table
+void Table::order(const std::vector<Dish> &menu) {
+    for(int i=0;i<customersList.size();i++){
+        vector<int> cusOrders=customersList.at(i)->order(menu);
+        for(int k=0;k<cusOrders.size();k++)     // going over the customer's orders
+            for(int j=0;j<menu.size();j++)      // finding dish by Id
+                if(cusOrders.at(k)==menu.at(j).getId())
+                    orderList.push_back(/* *new */OrderPair(customersList.at(i)->getId(), menu.at(j)));
+    }
+}
 void Table::openTable() { open = true; }
 void Table::closeTable() { open = false; }
 bool Table::isOpen() { return open; }
