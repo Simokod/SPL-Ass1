@@ -34,8 +34,19 @@ void OpenTable::act(Restaurant &restaurant) {
             cout <<"Table does not exist or is already open";
 }
 string OpenTable::toString(){
-        string str="This action opens a table by a given id, and adds a customers list to the table";
+        return "This action opens a table by a given id, and adds a customers list to the table";
     }
 
+// ---------------------------- Action: Move Customer -----------------------------------------
 
+MoveCustomer::MoveCustomer(int src, int dst, int customerId): srcTable(src),dstTable(dst),id(customerId) {}
+void MoveCustomer::act(Restaurant &restaurant) {
+    if(restaurant.getTables().size()<max(srcTable, dstTable)||!restaurant.getTables().at(srcTable).isOpen()||!restaurant.getTables().at(dstTable).isOpen()||restaurant.getTables().at(dstTable).getCapacity()<=restaurant.getTables().at(dstTable).getCustomers().size())
+        cout <<"Cannot move customer";
+    else
+    {
+        Customer *cust=restaurant.getTables().at(srcTable).getCustomer(id);
+        restaurant.getTables().at(dstTable).addCustomer(cust);
+        restaurant.getTables().at(srcTable).removeCustomer(id);
+    }
 }
