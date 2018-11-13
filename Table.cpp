@@ -9,49 +9,40 @@ using namespace std;
 
 // Table constructor
 Table::Table(int t_capacity): capacity(t_capacity), open(false) {}
-
 // Table copy constructor
-Table::Table(Table &other): capacity(other.capacity), open(other.open) {
-    customersList=other.customerList;
-    orderList=other.orderList;
+Table::Table(Table &other): capacity(other.getCapacity()), open(other.isOpen()) {
+    customersList=other.getCustomers();
+    orderList=other.getOrders();
 }
-// Table move constructor
-Table::Table(Table &&other): capacity(other.getCapacity()), open(other.isOpen()) {
-    customersList=other.customersList;
-    orderList=other.orderList;
-    other.customersList= nullptr;
-    other.orderList= nullptr;
-    other.open=false;
-    other.capacity=0;
-}
-// Table copy assignment operator
+// Table copy operator=
 Table& Table::operator=(const Table &other) {
-    if(this!=other) {
+    if(this!=&other) {
         clear();
         capacity=other.capacity;
-        open = other.open;
+        open=other.open;
         customersList=other.customersList;
         orderList=other.orderList;
     }
     return *this;
 }
-// Table move assignment operator
-Table& Table::operator=(const Table &&other) {
-    if(this!= &other)
-    {
+
+// Table move operator=
+Table& Table::operator=(Table &&other) {
+    if(this!=&other) {
         clear();
-        open=other.open;
         capacity=other.capacity;
+        open=other.open;
         customersList=other.customersList;
         orderList=other.orderList;
-        other.customersList= nullptr;
-        other.orderList= nullptr;
         other.open=false;
         other.capacity=0;
+        other.orderList.clear();
+        other.orderList.shrink_to_fit();
+        other.customersList.clear();
+        other.customersList.shrink_to_fit();
     }
-    return  *this;
+    return *this;
 }
-
 int Table::getCapacity() const { return capacity; }
 
 void Table::addCustomer(Customer *customer) {
@@ -88,15 +79,15 @@ int Table::getBill() {
 // Table destructor
 Table::~Table() { clear(); }
 
-private void Table::clear(){
-    for(int i=0;i<customersList.size();i++)
-        delete customersList.at(i);
-    customerList.clear();
-    for(int i=0;i<orderList.size();i++)
-        delete orderList.at(i);
+void Table::clear() {
     orderList.clear();
+    orderList.shrink_to_fit();
+    for(int i=0;i<customersList.size();i++)
+    {
+        delete customersList.at(i);
+        customersList.at(i) = nullptr;
+    }
+    customersList.shrink_to_fit();
     capacity=0;
     open=false;
-    customerList= nullptr;
-    orderList= nullptr;
 }
