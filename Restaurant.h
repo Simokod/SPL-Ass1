@@ -40,7 +40,16 @@ private:
     DishType convertDish(std::string str);
     Actions convertAct(std::string str);
 
-    OpenTable& actionOpenTable(std::string s);
+    OpenTable* actionOpenTable(std::string s);
+    Order* actionOrder(std::string s);
+    MoveCustomer* actionMove(std::string s);
+    Close* actionClose(std::string s);
+    CloseAll* actionCloseAll();
+    PrintMenu* actionPrintMenu(std::string s);
+    PrintTableStatus* actionPrintTableStatus(std::string s);
+    PrintActionsLog* actionPrintActionsLog(std::string s);
+    BackupRestaurant* actionBackupRestaurant(std::string s);
+    RestoreResturant* actionRestoreRestaurant(std::string s);
 };
 
 #endif

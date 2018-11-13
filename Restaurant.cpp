@@ -5,6 +5,7 @@
 #include "Dish.h"
 using namespace std;
 
+extern Restaurant* backup;
 //Restaurant constructor
 Restaurant::Restaurant(const std::string &configFilePath): customersId(0) {
     int index=0;
@@ -43,14 +44,14 @@ Restaurant& Restaurant::operator=(const Restaurant &other){
 // Restaurant move assignment operator
 Restaurant& Restaurant::operator=(Restaurant &&other){
     if(this!=&other) {
-        clear();
+        clear();                    // assign other into thi
         numOfTables=other.numOfTables;
         open = other.open;
         tables=other.tables;
         menu=other.menu;
         numOfTables=other.numOfTables;
         customersId=other.customersId;
-
+                                    // delete other
         other.menu.clear();
         other.menu.shrink_to_fit();
         other.tables.clear();
@@ -65,12 +66,10 @@ Restaurant& Restaurant::operator=(Restaurant &&other){
 // Restaurant destructor
 Restaurant::~Restaurant() { clear(); }
 
-
 //Getters
 std::vector<Dish>& Restaurant::getMenu() { return menu; }
 int Restaurant::getNumOfTables() const  { return numOfTables; }
 const std::vector<BaseAction*>& Restaurant::getActionsLog() const { return actionsLog; }
-//------------------------------------------------------------- NOT FINISHED--------------------------------
 // opening the restaurant to the world!
 void Restaurant::start() {
     cout << "Restaurant is now open!" << endl;
@@ -82,50 +81,50 @@ void Restaurant::start() {
         switch (input)
         {
             case OPEN:
-                *action=actionOpenTable(s);
+                action=actionOpenTable(s);
                 action->act(*this);
                 break;
             case ORDER:
-                *action=actionOrder();
+                action=actionOrder(s);
                 action->act(*this);
                 break;
             case MOVE:
-                *action=actionMove();
+                action=actionMove(s);
                 action->act(*this);
                 break;
             case CLOSE:
-                *action=actionClose();
+                action=actionClose(s);
                 action->act(*this);
                 break;
             case MENU:
-                *action=actionMenu();
+                action=actionPrintMenu(s);
                 action->act(*this);
                 break;
             case STATUS:
-                *action=actionStatus();
+                action=actionPrintTableStatus(s);
                 action->act(*this);
                 break;
             case LOG:
-                *action=actionLog();
+                action=actionPrintActionsLog(s);
                 action->act(*this);
                 break;
             case BACKUP:
-                *action=actionBackup();
+                action=actionBackupRestaurant(s);
                 action->act(*this);
                 break;
             case RESTORE:
-                *action=actionRestore();
+                action=actionRestoreRestaurant(s);
                 action->act(*this);
                 break;
         }
         actionsLog.push_back(action);
         cin >> s;
     }
-    *action=actionCloseAll();
+    action=actionCloseAll();
     action->act(*this);
 }
-// returns an OpenTable object according to input
-OpenTable& Restaurant::actionOpenTable(const std::string s) {
+// returns an OpenTable BaseAction
+OpenTable* Restaurant::actionOpenTable(const std::string s) {
     int i=5;
     string tableIdStr;
     while(s.at(i)!=' ')             // reading table ID
@@ -156,7 +155,91 @@ OpenTable& Restaurant::actionOpenTable(const std::string s) {
         customers.push_back(cus);
     }
     OpenTable *action=new OpenTable(tableId, customers);
-    return *action;
+    action->setInputStr(s);
+    return action;
+}
+// returns an Order BaseAction
+Order* Restaurant::actionOrder(std::string s) {
+    string tableIdStr;
+    for(int i=6;i<s.size();i++)
+        tableIdStr+=s.at(i);
+    int tableId=stoi(tableIdStr);
+    Order *action=new Order(tableId);
+    action->setInputStr(s);
+    return action;
+}
+// returns a Move BaseAction
+MoveCustomer* Restaurant::actionMove(std::string s) {
+    string srcStr, dstStr, customerIdStr;
+    int i=5;
+    while(s.at(i)!=' '){            // reading source table id
+        srcStr+=s.at(i);
+        i++;
+    }
+    i++;
+    while(s.at(i)!=' '){            // reading destination table id
+        dstStr+=s.at(i);
+        i++;
+    }
+    i++;
+    while(s.at(i)!=' '){            // reading customer id
+        customerIdStr+=s.at(i);
+        i++;
+    }
+    int src=stoi(srcStr);
+    int dst=stoi(dstStr);
+    int customerId=stoi(customerIdStr);
+    MoveCustomer *action=new MoveCustomer(src, dst, customerId);
+    action->setInputStr(s);
+    return action;
+}
+// returns a Close BaseAction
+Close* Restaurant::actionClose(std::string s) {
+    string tableIdStr;
+    for(int i=6;i<s.size();i++)
+        tableIdStr+=s.at(i);
+    int tableId=stoi(tableIdStr);
+    Close *action=new Close(tableId);
+    action->setInputStr(s);
+    return action;
+}
+// returns a CloseAll BaseAction
+CloseAll* Restaurant::actionCloseAll() {
+    return new CloseAll();
+}
+// returns a PrintMenu BaseAction
+PrintMenu* Restaurant::actionPrintMenu(std::string s) {
+    PrintMenu *action=new PrintMenu();
+    action->setInputStr(s);
+    return action;
+}
+// returns a PrintTableStatus BaseAction
+PrintTableStatus* Restaurant::actionPrintTableStatus(std::string s) {
+    string tableIdStr;
+    for(int i=7;i<s.size();i++)
+        tableIdStr+=s.at(i);
+    int tableId=stoi(tableIdStr);
+    PrintTableStatus *action=new PrintTableStatus(tableId);
+    action->setInputStr(s);
+    return action;
+}
+// returns a PrintActionsLog BaseAction
+PrintActionsLog* Restaurant::actionPrintActionsLog(std::string s) {
+    PrintActionsLog *action=new PrintActionsLog();
+    action->setInputStr(s);
+    return action;
+}
+// returns a BackUpRestaurant BaseAction
+BackupRestaurant* Restaurant::actionBackupRestaurant(std::string s) {
+    BackupRestaurant *action=new BackupRestaurant();
+    action->setInputStr(s);
+    return action;
+}
+// returns a RestoreRestaurant BaseAction
+RestoreResturant* Restaurant::actionRestoreRestaurant(std::string s) {
+    RestoreResturant *action=new RestoreResturant();
+    action->setInputStr(s);
+    return action;
 }
 //Assistant functions
 void Restaurant::clear() {
