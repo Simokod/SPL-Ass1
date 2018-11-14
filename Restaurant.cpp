@@ -15,7 +15,7 @@ Restaurant::Restaurant(const std::string &configFilePath): customersId(0) {
 }
 //Restaurant copy constructor
 Restaurant::Restaurant(const Restaurant &other): open(other.open), numOfTables(other.numOfTables), menu(other.menu),
-                                                customersId(other.customersId), tables(other.tables) {}
+                                                 customersId(other.customersId), tables(other.tables) {}
 //Restaurant move constructor
 Restaurant::Restaurant(Restaurant &&other): open(other.open), numOfTables(other.numOfTables), menu(other.menu),
                                             customersId(other.customersId), tables(other.tables)
@@ -51,7 +51,7 @@ Restaurant& Restaurant::operator=(Restaurant &&other){
         menu=other.menu;
         numOfTables=other.numOfTables;
         customersId=other.customersId;
-                                    // delete other
+        // delete other
         other.menu.clear();
         other.menu.shrink_to_fit();
         other.tables.clear();
@@ -68,8 +68,10 @@ Restaurant::~Restaurant() { clear(); }
 
 //Getters
 std::vector<Dish>& Restaurant::getMenu() { return menu; }
+std::vector<Table>& Restaurant::getTables()  {return tables;}
 int Restaurant::getNumOfTables() const  { return numOfTables; }
 const std::vector<BaseAction*>& Restaurant::getActionsLog() const { return actionsLog; }
+
 // opening the restaurant to the world!
 void Restaurant::start() {
     cout << "Restaurant is now open!" << endl;
@@ -144,13 +146,13 @@ OpenTable* Restaurant::actionOpenTable(const std::string s) {
         if(type=="veg")
             cus=new VegetarianCustomer(name, customersId);
         else
-            if(type=="chp")
-                cus=new CheapCustomer(name, customersId);
-            else
-                if(type=="spc")
-                    cus=new SpicyCustomer(name, customersId);
-                else
-                    cus=new AlchoholicCustomer(name, customersId);
+        if(type=="chp")
+            cus=new CheapCustomer(name, customersId);
+        else
+        if(type=="spc")
+            cus=new SpicyCustomer(name, customersId);
+        else
+            cus=new AlchoholicCustomer(name, customersId);
         customersId++;
         customers.push_back(cus);
     }

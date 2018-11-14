@@ -76,7 +76,8 @@ void Table::order(const std::vector<Dish> &menu) {
     }
 }
 void Table::openTable() { open = true; }
-void Table::closeTable() { open = false; }
+void Table::closeTable() {
+    clear();}
 bool Table::isOpen() { return open; }
 
 int Table::getBill() {
@@ -86,7 +87,10 @@ int Table::getBill() {
     return bill;
 }
 // Table destructor
-Table::~Table() { clear(); }
+Table::~Table() {
+    capacity=0;
+    clear();
+}
 
 void Table::clear() {
     orderList.clear();
@@ -97,6 +101,5 @@ void Table::clear() {
         customersList.at(i) = nullptr;
     }
     customersList.shrink_to_fit();
-    capacity=0;
     open=false;
 }
