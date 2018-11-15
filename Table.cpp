@@ -72,7 +72,7 @@ void Table::order(const std::vector<Dish> &menu) {
         for(int k=0;k<cusOrders.size();k++)     // going over the customer's orders
             for(int j=0;j<menu.size();j++)      // finding dish by Id
                 if(cusOrders.at(k)==menu.at(j).getId()) {
-                    orderList.push_back(/* *new */OrderPair(customersList.at(i)->getId(), menu.at(j)));
+                    orderList.push_back(*new OrderPair(customersList.at(i)->getId(), menu.at(j)));
                     cout << customersList.at(i)->getName() << " ordered " << orderList.back().second.getName() << endl;
                 }
     }
