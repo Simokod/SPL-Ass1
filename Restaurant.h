@@ -20,7 +20,8 @@ public:
 	int getNumOfTables() const;
 	const std::vector<BaseAction*>& getActionsLog() const; // Return a reference to the history of actions
 	std::vector<Dish>& getMenu();
-    std::vector<Table>& getTables();
+	Table* getTable(int id);
+   	std::vector<Table*>& getTables();
 	Restaurant& operator=(const Restaurant &other);
 	Restaurant& operator=(Restaurant &&other);
 	virtual ~Restaurant();
@@ -31,7 +32,6 @@ private:
 	int customersId;
 	std::vector<Table*> tables;
 	std::vector<Dish> menu;
-	std::vector<BaseAction*> actionsLog;
 	std::vector<BaseAction*> actionsLog;
 	std::vector<string> argsLog;
 
