@@ -5,7 +5,6 @@
 #include "Dish.h"
 using namespace std;
 
-extern Restaurant* backup;
 //Restaurant constructor
 Restaurant::Restaurant(const std::string &configFilePath): customersId(0) {
     int index=0;
@@ -67,9 +66,9 @@ Restaurant& Restaurant::operator=(Restaurant &&other){
 Restaurant::~Restaurant() { clear(); }
 
 //Getters
-vector<Dish>& Restaurant::getMenu() { return menu;}
-Table* getTable(int ind){ return tables.at(ind);};
-vector<Table*>& Restaurant::getTables()  {return tables;}
+std::vector<Dish>& Restaurant::getMenu() { return menu; }
+Table* Restaurant::getTable(int ind) { return tables.at(ind); }
+std::vector<Table*>& Restaurant::getTables()  { return tables; }
 int Restaurant::getNumOfTables() const  { return numOfTables; }
 const std::vector<BaseAction*>& Restaurant::getActionsLog() const { return actionsLog; }
 

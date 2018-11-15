@@ -10,11 +10,12 @@ using namespace std;
 
 ActionStatus BaseAction::getStatus() const { return status; }
 
-BaseAction:: BaseAction():status(PENDING){}
+BaseAction:: BaseAction():status(PENDING) {}
 
 void BaseAction::complete() { status = COMPLETED; }
-void BaseAction::setInputStr(std::string str) {inputString=str;}
+
 string BaseAction::getErrorMsg() const { return errorMsg; }
+
 string BaseAction::convertToString(ActionStatus stat) {
     switch(stat)
     {
@@ -26,12 +27,13 @@ string BaseAction::convertToString(ActionStatus stat) {
 
 void BaseAction::error(std::string errorMsg) {
     status = ERROR;
-    errorMsg=errorMsg;
-    cout<<errorMsg<<endl;
+    errorMsg = errorMsg;
+    cout << errorMsg << endl;
 }
 
 // ---------------------------- Action: Open Table -----------------------------------------
 OpenTable::OpenTable(int id, std::vector<Customer *> &customersList):tableId(id), customers(customersList), str("open") {}
+
 void OpenTable::act(Restaurant &restaurant) {
     if(isError(restaurant))
         error("Table does not exist or is already open");
@@ -39,14 +41,14 @@ void OpenTable::act(Restaurant &restaurant) {
         restaurant.getTables().at(tableId)->openTable();
         for (int i = 0; i < customers.size(); i++)
             restaurant.getTables().at(tableId)->getCustomers().push_back(customers.at(i));
+        complete();
     }
 }
-void OpenTable::setInputStr(string args){
-    str=args;
-}
+
 string OpenTable::toString() const{
     return str;
 }
+
 // the function returns true if the table cannot be opened
 bool OpenTable::isError(Restaurant& restaurant) {
     bool p1 = restaurant.getTables().size() <= tableId;
@@ -64,13 +66,13 @@ Order::Order(int id):tableId(id) {}
 void Order::act(Restaurant &restaurant) {
     if(!restaurant.getTable(tableId)->isOpen() | restaurant.getNumOfTables()<=tableId)
         error("Table does not exist or is not open");
-    else
+    else {
         restaurant.getTable(tableId)->order(restaurant.getMenu());
+        complete();
+    }
 }
 
 std::string Order::toString() const { return str; }
-
-void Order::setInputStr(string args) { str=args; }
 
 // ---------------------------- Action: Move Customer -----------------------------------------
 
@@ -92,13 +94,11 @@ void MoveCustomer::act(Restaurant &restaurant) {
         }
         if(restaurant.getTables().size()==0)
             restaurant.getTable(srcTable)->closeTable();
+        complete();
     }
 }
 
-void MoveCustomer::setInputStr(string args){ str=args; }
-
 // the function returns true if the customer cannot be moved;
-std::string MoveCustomer::toString() const {return str;}
 bool MoveCustomer::isError(Restaurant &restaurant) {
     bool p1=restaurant.getTables().size()<=max(srcTable, dstTable);
     bool p2=!restaurant.getTable(srcTable)->isOpen();
@@ -116,11 +116,11 @@ void Close::act(Restaurant &restaurant) {
     if(restaurant.getTables().size()<tableId||!restaurant.getTables().at(tableId).isOpen())
         cout <<"Table does not exist or is not open";
     else{
-        cout <<"Table "<<tableId<<"is was closed. Bill is "<<restaurant.getTables().at(tableId).getBill()<<"NIS";
-        restaurant.getTables().at(tableId).closeTable();
+        cout <<"Table " << tableId << " was closed. Bill is "<<restaurant.getTables().at(tableId).getBill() << "NIS";
+        restaurant.getTables().at(tableId).closeTable()
+        complete();
     }
 }
-void Close::setInputStr(string args) { str=args; }
 
 std::string Close::toString() const { return str; }
 
@@ -140,8 +140,67 @@ std::string CloseAll::toString() const { return "Close All"; }
 
 // ---------------------------- Action: PrintActionsLog  -----------------------------------------
 
-PrintActionsLog::PrintActionsLog(){}
+PrintActionsLog::PrintActionsLog() {}
 void PrintActionsLog::act(Restaurant &restaurant){
     for(int i=0;i<restaurant.getActionsLog().size();i++)
-        cout << restaurant.getActionsLog().at(i)->toString()<<endl<<convertToString(restaurant.getActionsLog().at(i));
+        cout << restaurant.getActionsLog().at(i)->toString() << endl << convertToString(restaurant.getActionsLog().at(i));
+    complete();
 }
+// ------------------------------------------  PrintMenu  ------------------------------------------------------
+PrintMenu::PrintMenu() {}
+
+void PrintMenu::act(Restaurant &restaurant) {
+    for(auto i=restaurant.getMenu().begin(); i!=restaurant.getMenu().end();i++)
+        cout << i->toString();
+    complete();
+}
+
+string PrintMenu::toString() const { return str; }
+
+// ------------------------------------------  PrintTableStatus  ------------------------------------------------------
+PrintTableStatus::PrintTableStatus(int id):tableId(id) {}
+
+void PrintTableStatus::act(Restaurant &restaurant) {
+    cout << "Table " << tableId << " Status: ";
+    if(restaurant.getTable(tableId)->isOpen()) {
+        cout << "open" << endl;
+        cout << "Customers:" << endl;
+        for (auto i = restaurant.getTable(tableId)->getCustomers().begin(); i != restaurant.getTable(tableId)->getCustomers().end(); i++)
+            cout << (*i)->getId() << " " << (*i)->getName() << endl;
+        cout << "Orders:" << endl;
+        for (auto i = restaurant.getTable(tableId)->getOrders().begin(); i != restaurant.getTable(tableId)->getOrders().end(); i++)
+            cout << i->second.getName() << " " << i->second.getPrice() << " " << i->first << endl;
+        cout << restaurant.getTable(tableId)->getBill() << endl;
+    }
+    else
+        cout << "closed" << endl;
+    complete();
+}
+
+std::string PrintTableStatus::toString() const { return str; }
+
+// ------------------------------------------  BackupRestaurant  ------------------------------------------------------
+BackupRestaurant::BackupRestaurant() {}
+
+void BackupRestaurant::act(Restaurant &restaurant) {
+    extern Restaurant* backup;
+    backup=new Restaurant(restaurant);
+    complete();
+}
+
+std::string BackupRestaurant::toString() const { return str; }
+
+// ------------------------------------------  BackupRestaurant  ------------------------------------------------------
+RestoreResturant::RestoreResturant() {}
+
+void RestoreResturant::act(Restaurant &restaurant) {
+    extern Restaurant* backup;
+    if(backup==nullptr)
+        error("No backup available");
+    else {
+        restaurant = *backup;
+        complete();
+    }
+}
+
+std::string RestoreResturant::toString() const { return str; }
