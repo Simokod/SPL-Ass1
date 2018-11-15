@@ -20,8 +20,8 @@ public:
 	int getNumOfTables() const;
 	const std::vector<BaseAction*>& getActionsLog() const; // Return a reference to the history of actions
 	std::vector<Dish>& getMenu();
-	std::Table* getTable(int id);
-    std::vector<Table*>& getTables();
+	Table* getTable(int id);
+   	std::vector<Table*>& getTables();
 	Restaurant& operator=(const Restaurant &other);
 	Restaurant& operator=(Restaurant &&other);
 	virtual ~Restaurant();
