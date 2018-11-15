@@ -4,8 +4,8 @@
 #include <string>
 #include <iostream>
 #include "Customer.h"
-#include "Restaurant.h"
-#include "Table.h"
+
+using namespace std;
 
 enum ActionStatus{
     PENDING, COMPLETED, ERROR
@@ -39,9 +39,9 @@ public:
     std::string toString() const;
 private:
     bool isError(Restaurant &restaurant);
-	const int tableId;
+    const int tableId;
     string str;
-	std::vector<Customer *> customers;
+    std::vector<Customer *> customers;
 };
 
 class Order : public BaseAction {
@@ -87,7 +87,7 @@ class CloseAll : public BaseAction {
 public:
     CloseAll();
     void act(Restaurant &restaurant);
-    string str;
+    virtual void setInputStr(string args);
     std::string toString() const;
 private:
 };
@@ -99,6 +99,8 @@ public:
     void act(Restaurant &restaurant);
     virtual void setInputStr(string args);
     std::string toString() const;
+private:
+    string str;
 };
 
 
@@ -118,6 +120,7 @@ class PrintActionsLog : public BaseAction {
 public:
     PrintActionsLog();
     void act(Restaurant &restaurant);
+    virtual void setInputStr(string args);
     std::string toString() const;
 private:
     string str;
