@@ -38,11 +38,11 @@ public:
     virtual void setInputStr(string args);
     std::string toString() const;
 private:
+    bool isError(Restaurant &restaurant);
 	const int tableId;
     string str;
 	std::vector<Customer *> customers;
 };
-
 
 class Order : public BaseAction {
 public:
@@ -67,6 +67,7 @@ private:
     const int srcTable;
     const int dstTable;
     const int id;
+    bool isError(Restaurant &restaurant);
 };
 
 
@@ -98,8 +99,6 @@ public:
     void act(Restaurant &restaurant);
     virtual void setInputStr(string args);
     std::string toString() const;
-private:
-    string str;
 };
 
 

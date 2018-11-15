@@ -67,8 +67,9 @@ Restaurant& Restaurant::operator=(Restaurant &&other){
 Restaurant::~Restaurant() { clear(); }
 
 //Getters
-std::vector<Dish>& Restaurant::getMenu() { return menu; }
-std::vector<Table>& Restaurant::getTables()  {return tables;}
+vector<Dish>& Restaurant::getMenu() { return menu;}
+Table* getTable(int ind){ return tables.at(ind);};
+vector<Table*>& Restaurant::getTables()  {return tables;}
 int Restaurant::getNumOfTables() const  { return numOfTables; }
 const std::vector<BaseAction*>& Restaurant::getActionsLog() const { return actionsLog; }
 
