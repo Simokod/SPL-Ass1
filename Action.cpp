@@ -30,7 +30,7 @@ void BaseAction::error(std::string errorMsg) {
     cout<<errorMsg<<endl;
 }
 
-/ ---------------------------- Action: Open Table -----------------------------------------
+// ---------------------------- Action: Open Table -----------------------------------------
 OpenTable::OpenTable(int id, std::vector<Customer *> &customersList):tableId(id), customers(customersList), str("open") {}
 void OpenTable::act(Restaurant &restaurant) {
     if(isError(restaurant))
@@ -95,11 +95,10 @@ void MoveCustomer::act(Restaurant &restaurant) {
     }
 }
 
-void MoveCustomer::setInputStr(string args){
-    str=args;
-}
-std::string MoveCustomer::toString() const {return str;}
+void MoveCustomer::setInputStr(string args){ str=args; }
+
 // the function returns true if the customer cannot be moved;
+std::string MoveCustomer::toString() const {return str;}
 bool MoveCustomer::isError(Restaurant &restaurant) {
     bool p1=restaurant.getTables().size()<=max(srcTable, dstTable);
     bool p2=!restaurant.getTable(srcTable)->isOpen();
@@ -107,10 +106,8 @@ bool MoveCustomer::isError(Restaurant &restaurant) {
     bool p4=restaurant.getTable(dstTable)->getCapacity() == restaurant.getTable(dstTable)->getCustomers().size();
     return p1 | p2 | p3 | p4;
 }
-void MoveCustomer::setInputStr(string args){
-    str=args;
-}
-std::string MoveCustomer::toString() const {return str;}
+
+std::string MoveCustomer::toString() const { return str; }
 
 // ---------------------------- Action: Close  -----------------------------------------
 
@@ -123,14 +120,14 @@ void Close::act(Restaurant &restaurant) {
         restaurant.getTables().at(tableId).closeTable();
     }
 }
-void Close::setInputStr(string args){
-    str=args;
-}
-std::string Close::toString() const {return str;}
+void Close::setInputStr(string args) { str=args; }
+
+std::string Close::toString() const { return str; }
 
 // ---------------------------- Action: CloseAll  -----------------------------------------
 
 CloseAll::CloseAll(){}
+
 void CloseAll::act(Restaurant &restaurant) {
     for (int i=0; i<restaurant.getTables().size();i++){
         cout <<"Table "<<i<<"is was closed. Bill is "<<restaurant.getTables().at(i).getBill()<<"NIS /n";
@@ -138,7 +135,8 @@ void CloseAll::act(Restaurant &restaurant) {
     }
     restaurant.~Restaurant();
 }
-std::string CloseAll::toString() const {return "Close All";}
+
+std::string CloseAll::toString() const { return "Close All"; }
 
 // ---------------------------- Action: PrintActionsLog  -----------------------------------------
 
