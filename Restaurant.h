@@ -21,7 +21,6 @@ public:
     int getNumOfTables() const;
     const std::vector<BaseAction*>& getActionsLog() const; // Return a reference to the history of actions
     Table* getTable(int ind);
-    vector<Table*>& getTables();
     std::vector<Dish>& getMenu();
     Restaurant& operator=(const Restaurant &other);
     Restaurant& operator=(Restaurant &&other);

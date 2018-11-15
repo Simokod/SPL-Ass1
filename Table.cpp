@@ -5,14 +5,19 @@
 #include <vector>
 #include "Table.h"
 #include "Customer.h"
+#include <iostream>
 using namespace std;
 
 // Table constructor
 Table::Table(int t_capacity): capacity(t_capacity), open(false) {}
 // Table copy constructor
 Table::Table(Table &other): capacity(other.getCapacity()), open(other.isOpen()) {
-    customersList=other.getCustomers();
-    orderList=other.getOrders();
+    // copying other customersList
+    for (int i = 0; i < getCustomers().size(); i++)
+        customersList.push_back(other.customersList.at(i)->clone());
+    // copying other orderList
+    for (int i = 0; i < other.orderList.size(); i++)
+        orderList.push_back(other.orderList.at(i));
 }
 // Table copy operator=
 Table& Table::operator=(const Table &other) {
@@ -20,8 +25,16 @@ Table& Table::operator=(const Table &other) {
         clear();
         capacity=other.capacity;
         open=other.open;
-        customersList=other.customersList;
-        orderList=other.orderList;
+        // deleting this costumersList
+        for(int i=0;i<customersList.size();i++)
+            delete customersList.at(i);
+        // copying other costumersList
+        for(int i=0;i<getCustomers().size();i++) {
+            customersList.push_back(other.customersList.at(i)->clone());
+        }
+        // copying other orderList
+        for(int i=0;i<other.orderList.size();i++)
+            orderList.push_back(other.orderList.at(i));
     }
     return *this;
 }
@@ -32,14 +45,14 @@ Table& Table::operator=(Table &&other) {
         clear();
         capacity=other.capacity;
         open=other.open;
-        customersList=other.customersList;
-        orderList=other.orderList;
-        other.open=false;
-        other.capacity=0;
-        other.orderList.clear();
-        other.orderList.shrink_to_fit();
-        other.customersList.clear();
-        other.customersList.shrink_to_fit();
+        // copying other customersList
+        for(int i=0;i<getCustomers().size();i++) {
+            customersList.push_back(other.customersList.at(i)->clone());
+        }
+        // copying other orderList
+        for(int i=0;i<other.orderList.size();i++)
+            orderList.push_back(other.orderList.at(i));
+        other.clear();
     }
     return *this;
 }
@@ -53,7 +66,6 @@ std::vector<Customer*>& Table::getCustomers() { return customersList; }
 
 std::vector<OrderPair>& Table::getOrders() { return orderList; }
 
-// removes a customer from the table, does not take care of orders****************
 void Table::removeCustomer(int id) {
     for(int i=0;i<customersList.size();i++)
         if(customersList.at(i)->getId()==id)
@@ -97,10 +109,8 @@ void Table::clear() {
     orderList.clear();
     orderList.shrink_to_fit();
     for(int i=0;i<customersList.size();i++)
-    {
         delete customersList.at(i);
-        customersList.at(i) = nullptr;
-    }
+    customersList.clear();
     customersList.shrink_to_fit();
     open=false;
 }

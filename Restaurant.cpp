@@ -68,7 +68,6 @@ Restaurant::~Restaurant() { clear(); }
 //Getters
 std::vector<Dish>& Restaurant::getMenu() { return menu; }
 Table* Restaurant::getTable(int ind) { return tables.at(ind); }
-std::vector<Table*>& Restaurant::getTables()  { return tables; }
 int Restaurant::getNumOfTables() const  { return numOfTables; }
 const std::vector<BaseAction*>& Restaurant::getActionsLog() const { return actionsLog; }
 
@@ -207,7 +206,7 @@ Close* Restaurant::actionClose(std::string s) {
 }
 // returns a CloseAll BaseAction
 CloseAll* Restaurant::actionCloseAll() {
-    return new CloseAll();
+    return new CloseAll;
 }
 // returns a PrintMenu BaseAction
 PrintMenu* Restaurant::actionPrintMenu(std::string s) {
@@ -265,7 +264,7 @@ int Restaurant::readNumOfTables(int &i, const string &file){
             i++;
     while(i=='\n') i++;     // going down empty lines
     // getting number of tables from 2nd line
-    string numOfTables=
+    string numOfTables;
     while(file.at(i)!='\n') {
         numOfTables+=file.at(i);
         i++;

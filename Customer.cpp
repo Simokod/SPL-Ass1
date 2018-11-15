@@ -46,6 +46,8 @@ using namespace std;
         string s3=", Vegeterian Customer";
         return s1+s2+s3;
     }
+
+    VegetarianCustomer* VegetarianCustomer::clone() { return new VegetarianCustomer(*this); }
 //----------------------------------------------Cheap Customer--------------------------------------
     CheapCustomer::CheapCustomer(string name, int id): Customer(name, id), ordered(false) {}
 
@@ -75,6 +77,7 @@ using namespace std;
         return s1+s2+s3;
     }
 
+    CheapCustomer* CheapCustomer::clone() { return new CheapCustomer(*this); }
 //----------------------------------------------Spicy Customer--------------------------------------
     SpicyCustomer::SpicyCustomer(string name, int id): Customer(name, id), ordered(false) {}
 
@@ -130,6 +133,7 @@ using namespace std;
         return s1+s2+s3;
     }
 
+    SpicyCustomer* SpicyCustomer::clone() { return new SpicyCustomer(*this); }
 //----------------------------------------------Alchoholic Customer--------------------------------------
     AlchoholicCustomer::AlchoholicCustomer(string name, int id): Customer(name, id), lastOrder(-1) {}
 
@@ -170,3 +174,5 @@ using namespace std;
         string s3=", Alchoholic Customer";
         return s1+s2+s3;
     }
+
+    AlchoholicCustomer* AlchoholicCustomer::clone() { return new AlchoholicCustomer(*this); }
