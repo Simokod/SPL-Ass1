@@ -157,7 +157,7 @@ using namespace std;
            }
        // searching for a cheaper ALC Dish (more expensive than last order)
        for( i ; i != menu.end(); i++)
-           if (i->getType() == ALC && i->getPrice()>lastOrderPrice & i->getPrice()< minPrice)
+           if (i->getType() == ALC && i->getPrice()>lastOrderPrice & i->getPrice() < minPrice)
            {
                minPrice=i->getPrice();
                minPriceId=i->getId();
