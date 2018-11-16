@@ -22,10 +22,11 @@ public:
     int getBill();
     bool isOpen();
 
-    virtual ~Table();
-    Table(Table &table);
-    Table& operator=(const Table &other);
-    Table& operator=(Table &&other);
+    virtual ~Table();                       // destructor
+    Table(const Table &other);              // copy constructor
+    Table(Table &&other);                   // move operator
+    Table& operator=(const Table &other);   // copy operator=
+    Table& operator=(Table &&other);        // move operator=
 private:
     int capacity;
     bool open;

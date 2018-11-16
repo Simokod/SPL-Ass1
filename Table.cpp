@@ -10,8 +10,9 @@ using namespace std;
 
 // Table constructor
 Table::Table(int t_capacity): capacity(t_capacity), open(false) {}
+
 // Table copy constructor
-Table::Table(Table &other): capacity(other.getCapacity()), open(other.isOpen()) {
+Table::Table(const Table &other): capacity(other.getCapacity()), open(other.open) {
     // copying other customersList
     for (int i = 0; i < getCustomers().size(); i++)
         customersList.push_back(other.customersList.at(i)->clone());
@@ -19,6 +20,16 @@ Table::Table(Table &other): capacity(other.getCapacity()), open(other.isOpen()) 
     for (int i = 0; i < other.orderList.size(); i++)
         orderList.push_back(other.orderList.at(i));
 }
+
+// Table move constructor
+Table::Table(Table &&other): capacity(other.capacity), open(other.open) {
+    for(int i=0;i<other.customersList.size();i++)
+        customersList.push_back(other.customersList.at(i));
+    for(int i=0;i<other.orderList.size();i++)
+        orderList.push_back(other.orderList.at(i));
+    other.clear();
+}
+
 // Table copy operator=
 Table& Table::operator=(const Table &other) {
     if(this!=&other) {
@@ -56,6 +67,7 @@ Table& Table::operator=(Table &&other) {
     }
     return *this;
 }
+
 int Table::getCapacity() const { return capacity; }
 
 void Table::addCustomer(Customer *customer) {
