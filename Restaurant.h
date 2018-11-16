@@ -20,8 +20,6 @@ public:
     const std::vector<BaseAction*>& getActionsLog() const; // Return a reference to the history of actions
     Table* getTable(int ind);
     std::vector<Dish>& getMenu();
-    Restaurant& operator=(const Restaurant &other);
-    Restaurant& operator=(Restaurant &&other);
 
     virtual ~Restaurant();                           // destructor
     Restaurant(const Restaurant &other);             // copy constructor
