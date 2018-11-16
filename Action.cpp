@@ -285,46 +285,6 @@ std::string MoveCustomer::toString() const { return str; }
 //Constructor
 Close::Close(int id): tableId(id), str("close"){}
 
-//Copy Constructor
-Close::Close(const Close &other):tableId(other.tableId), str("close") {}
-
-//Copy Operator=
-Close& Close::operator=(const Close &other){
-    if(this!=&other){
-        //deleting the old data
-        clear();
-        /*changing const int, needs to be checked*/
-        int *ptr;
-        ptr=(int*)(&tableId);
-        *ptr=other.tableId;
-    }
-    return *this;
-}
-
-//Move Operator=
-Close& Close::operator=(Close &&other){
-    if(this!=&other){
-        //deleting the old data
-        clear();
-        /*changing const int, needs to be checked*/
-        int *ptr;
-        ptr=(int*)(&tableId);
-        *ptr=other.tableId;
-        other.clear();
-    }
-    return *this;
-}
-
-//Destructor
-Close::~Close() { clear();}
-void Close::clear(){
-    int *ptr;
-    ptr=(int*)(&tableId);
-    *ptr=0;
-    str="";
-}
-
-
 void Close::act(Restaurant &restaurant) {
     if(restaurant.getNumOfTables()<tableId || !restaurant.getTable(tableId)->isOpen())
         cout << "Table does not exist or is not open";
