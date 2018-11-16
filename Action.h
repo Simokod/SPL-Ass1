@@ -90,17 +90,13 @@ private:
 class Close : public BaseAction {
 public:
     Close(int id);
-    Close(const Close &other);
-    Close& operator=(const Close &other);
-    Close& operator=(Close &&other);
-    virtual ~Close();
     void act(Restaurant &restaurant);
     virtual void setInputStr(string args);
     std::string toString() const;
 private:
     string str;
     const int tableId;
-    void clear();
+
 };
 
 
