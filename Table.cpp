@@ -68,6 +68,8 @@ Table& Table::operator=(Table &&other) {
     return *this;
 }
 
+Table* Table::clone() { return new Table(*this); }
+
 int Table::getCapacity() const { return capacity; }
 
 void Table::addCustomer(Customer *customer) {

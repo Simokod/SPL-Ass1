@@ -27,6 +27,7 @@ public:
     Table(Table &&other);                   // move operator
     Table& operator=(const Table &other);   // copy operator=
     Table& operator=(Table &&other);        // move operator=
+    Table* clone();
 private:
     int capacity;
     bool open;
