@@ -14,8 +14,6 @@ enum Actions{OPEN, ORDER, MOVE, CLOSE, CLOSEALL, MENU, STATUS, LOG, BACKUP, REST
 class Restaurant{
 public:
     Restaurant();
-    Restaurant(const Restaurant &other);
-    Restaurant(Restaurant &&other);
     Restaurant(const std::string &configFilePath);
     void start();
     int getNumOfTables() const;
@@ -24,8 +22,12 @@ public:
     std::vector<Dish>& getMenu();
     Restaurant& operator=(const Restaurant &other);
     Restaurant& operator=(Restaurant &&other);
-    virtual ~Restaurant();
 
+    virtual ~Restaurant();                           // destructor
+    Restaurant(const Restaurant &other);             // copy constructor
+    Restaurant(Restaurant &&other);                  // move constructor
+    Restaurant& operator=(const Restaurant &other);  // copy operator=
+    Restaurant& operator=(Restaurant &&other);       // move operator=
 
 private:
     bool open;

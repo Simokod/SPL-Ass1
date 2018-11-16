@@ -13,19 +13,22 @@ Restaurant::Restaurant(const std::string &configFilePath): customersId(0) {
     createMenu(index, configFilePath);
 }
 //Restaurant copy constructor
-Restaurant::Restaurant(const Restaurant &other): open(other.open), numOfTables(other.numOfTables), menu(other.menu),
-                                                 customersId(other.customersId), tables(other.tables) {}
+Restaurant::Restaurant(const Restaurant &other): open(other.open), numOfTables(other.numOfTables),
+                                                 customersId(other.customersId) {
+    for(int i=0;i<other.menu.size();i++)        // copying the menu
+        menu.push_back(other.menu.at(i));
+    for(int i=0;i<other.tables.size();i++)      // copying the tables
+        tables.push_back(other.tables.at(i)->clone());
+}
 //Restaurant move constructor
-Restaurant::Restaurant(Restaurant &&other): open(other.open), numOfTables(other.numOfTables), menu(other.menu),
-                                            customersId(other.customersId), tables(other.tables)
-{
-    other.menu.clear();
-    other.menu.shrink_to_fit();
-    other.tables.clear();
-    other.tables.shrink_to_fit();
-    other.open = false;
-    other.numOfTables=0;
-    other.customersId=0;
+Restaurant::Restaurant(Restaurant &&other): open(other.open), numOfTables(other.numOfTables),
+                                            customersId(other.customersId) {
+    for(int i=0;i<other.menu.size();i++)        // moving the menu
+        menu.push_back(other.menu.at(i));
+    for(int i=0;i<other.tables.size();i++)      // moving the tables
+        tables.push_back(other.tables.at(i));
+    other.menu.clear();                         // deleting other menu
+    other.tables.clear();                       // deleting other tables
 }
 
 // Restaurant copy assignment operator
@@ -34,30 +37,28 @@ Restaurant& Restaurant::operator=(const Restaurant &other){
         clear();
         numOfTables=other.numOfTables;
         open=other.open;
-        tables=other.tables;
-        menu=other.menu;
         customersId=other.customersId;
+        for(int i=0;i<other.menu.size();i++)        // copying other menu
+            menu.push_back(other.menu.at(i));
+        for(int i=0;i<other.tables.size();i++)      // copying other tables
+            tables.push_back(other.tables.at(i)->clone());
     }
     return *this;
 }
 // Restaurant move assignment operator
 Restaurant& Restaurant::operator=(Restaurant &&other){
     if(this!=&other) {
-        clear();                    // assign other into thi
+        clear();
         numOfTables=other.numOfTables;
         open = other.open;
-        tables=other.tables;
-        menu=other.menu;
-        numOfTables=other.numOfTables;
         customersId=other.customersId;
         // delete other
-        other.menu.clear();
-        other.menu.shrink_to_fit();
-        other.tables.clear();
-        other.tables.shrink_to_fit();
-        other.open = false;
-        other.numOfTables=0;
-        other.customersId=0;
+        for(int i=0;i<other.menu.size();i++)        // moving the menu
+            menu.push_back(other.menu.at(i));
+        for(int i=0;i<other.tables.size();i++)      // moving the tables
+            tables.push_back(other.tables.at(i));
+        other.menu.clear();                         // deleting other menu
+        other.tables.clear();                       // deleting other tables
     }
     return *this;
 }
@@ -245,16 +246,9 @@ RestoreResturant* Restaurant::actionRestoreRestaurant(std::string s) {
 //Assistant functions
 void Restaurant::clear() {
     menu.clear();
-    menu.shrink_to_fit();
     for(int i=0;i<tables.size();i++)
-    {
         delete tables.at(i);
-        tables.at(i) = nullptr;
-    }
-    tables.shrink_to_fit();
-    numOfTables=0;
-    customersId=0;
-    open=false;
+    tables.clear();
 }
 // the function reads the config file and returns the number of tables in the restaurant
 int Restaurant::readNumOfTables(int &i, const string &file){
