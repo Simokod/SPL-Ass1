@@ -57,9 +57,8 @@ Table& Table::operator=(Table &&other) {
         capacity=other.capacity;
         open=other.open;
         // copying other customersList
-        for(int i=0;i<getCustomers().size();i++) {
+        for(int i=0;i<getCustomers().size();i++)
             customersList.push_back(other.customersList.at(i)->clone());
-        }
         // copying other orderList
         for(int i=0;i<other.orderList.size();i++)
             orderList.push_back(other.orderList.at(i));

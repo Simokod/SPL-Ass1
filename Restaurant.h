@@ -6,6 +6,8 @@
 #include "Dish.h"
 #include "Table.h"
 #include "Action.h"
+#include <bits/stdc++.h>
+
 
 extern Restaurant* backup;
 
@@ -41,6 +43,7 @@ private:
     void clear();
     DishType convertDish(std::string str);
     Actions convertAct(std::string str);
+    std::string fileToString(fstream &file);
 
     OpenTable* actionOpenTable(std::string s);
     Order* actionOrder(std::string s);

@@ -1,11 +1,11 @@
 #ifndef ACTION_H_
 #define ACTION_H_
 
-#include <string>
 #include <iostream>
 #include "Customer.h"
-#include "Restaurant.h"
 #include "Table.h"
+#include <string>
+using namespace std;
 
 enum ActionStatus{
     PENDING, COMPLETED, ERROR
@@ -33,20 +33,21 @@ private:
 
 class OpenTable : public BaseAction {
 public:
-    OpenTable(int id, std::vector<Customer *> &customersList);
-    OpenTable(OpenTable &other);
-    OpenTable& operator=(const OpenTable &other);
-    OpenTable& operator=(OpenTable &&other);
-    virtual ~OpenTable();
+    OpenTable(int id, std::vector<Customer *> &customersList);      // Constructor
+    OpenTable(const OpenTable &other);                              // Copy Constructor
+    OpenTable(OpenTable &&other);                                   // Move Constructor
+    OpenTable& operator=(const OpenTable &other);                   // Copy Operator=
+    OpenTable& operator=(OpenTable &&other);                        // Move Operator=
+    virtual ~OpenTable();                                           // Destructor
     void act(Restaurant &restaurant);
     virtual void setInputStr(string args);
     std::string toString() const;
 private:
     bool isError(Restaurant &restaurant);
     void clear();
-	const int tableId;
+    const int tableId;
     string str;
-	std::vector<Customer *> customers;
+    std::vector<Customer *> customers;
 };
 
 class Order : public BaseAction {
@@ -105,7 +106,9 @@ public:
     CloseAll();
     void act(Restaurant &restaurant);
     std::string toString() const;
+    virtual void setInputStr(string args);
 private:
+    string str;
 };
 
 
@@ -137,6 +140,7 @@ public:
     PrintActionsLog();
     void act(Restaurant &restaurant);
     std::string toString() const;
+    virtual void setInputStr(string args);
 private:
     string str;
 };

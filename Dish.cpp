@@ -24,13 +24,13 @@
     std::string Dish::toString() {
         std::string s=name+" ";
         if(type==VEG)
-            s+="VEG";
+            s+="VEG ";
         if(type==SPC)
-            s+="SPC";
+            s+="SPC ";
         if(type==BVG)
-            s+="BVG";
+            s+="BVG ";
         if(type==ALC)
-            s+="ALC";
+            s+="ALC ";
         s+=std::to_string(price);
         return s;
     }

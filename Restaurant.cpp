@@ -3,14 +3,28 @@
 //
 #include "Restaurant.h"
 #include "Dish.h"
+
 using namespace std;
 
 //Restaurant constructor
 Restaurant::Restaurant(const std::string &configFilePath): customersId(0) {
     int index=0;
-    numOfTables=readNumOfTables(index, configFilePath);
-    createTables(index, configFilePath, numOfTables);
-    createMenu(index, configFilePath);
+    fstream file;
+    file.open(configFilePath);
+    string theFile=fileToString(file);
+    numOfTables=readNumOfTables(index, theFile);
+    createTables(index, theFile, numOfTables);
+    createMenu(index, theFile);
+}
+std::string Restaurant::fileToString(fstream &file) {
+    string allFile;
+    char line[256];
+    while(file.getline(line, 256))
+    {
+        allFile+=line;
+        allFile+="\n";
+    }
+    return allFile;
 }
 //Restaurant copy constructor
 Restaurant::Restaurant(const Restaurant &other): open(other.open), numOfTables(other.numOfTables),
@@ -75,8 +89,9 @@ const std::vector<BaseAction*>& Restaurant::getActionsLog() const { return actio
 // opening the restaurant to the world!
 void Restaurant::start() {
     cout << "Restaurant is now open!" << endl;
+    cout << "Please enter command" << endl;
     string s;
-    cin >> s;
+    getline(cin, s);
     BaseAction *action;
     while(s.substr(0,8)!="closeall") {
         Actions input=convertAct(s);
@@ -120,7 +135,8 @@ void Restaurant::start() {
                 break;
         }
         actionsLog.push_back(action);
-        cin >> s;
+        cout << "Please enter command" << endl;
+        getline(cin, s);
     }
     action=actionCloseAll();
     action->act(*this);
@@ -129,18 +145,22 @@ void Restaurant::start() {
 OpenTable* Restaurant::actionOpenTable(const std::string s) {
     int i=5;
     string tableIdStr;
-    while(s.at(i)!=' ')             // reading table ID
-        tableIdStr+=s.at(i);
+    while(s.at(i)!=' ') {            // reading table ID
+        tableIdStr += s.at(i);
+        i++;
+    }
     int tableId=stoi(tableIdStr);
+    i++;
     string name, type;
     vector<Customer*> customers;
     for( i ; i<s.size();i++){
+        name="";
         while(s.at(i)!=','){        // reading costumer name
             name+=s.at(i);
             i++;
         }
         type=s.substr(i+1,3);       // reading costumer type
-        i=i+5;                      // moving index to next costumer
+        i=i+4;                      // moving index to next costumer
         // creating the customer
         Customer *cus;
         if(type=="veg")
@@ -184,7 +204,7 @@ MoveCustomer* Restaurant::actionMove(std::string s) {
         i++;
     }
     i++;
-    while(s.at(i)!=' '){            // reading customer id
+    while(i<s.size() && s.at(i)!=' '){            // reading customer id
         customerIdStr+=s.at(i);
         i++;
     }
@@ -256,14 +276,14 @@ int Restaurant::readNumOfTables(int &i, const string &file){
     if(file.at(i)=='#')
         while(file.at(i)!='\n')
             i++;
-    while(i=='\n') i++;     // going down empty lines
+    while(file.at(i)=='\n') i++;     // going down empty lines
     // getting number of tables from 2nd line
     string numOfTables;
     while(file.at(i)!='\n') {
         numOfTables+=file.at(i);
         i++;
     }
-    while(i=='\n') i++;    // going down empty lines
+    while(file.at(i)=='\n') i++;    // going down empty lines
     return stoi(numOfTables);
 }
 // filling the tables vector
@@ -272,11 +292,11 @@ void Restaurant::createTables(int &i, const std::string &file, int numOfTables) 
     if(file.at(i)=='#')
         while(file.at(i)!='\n')
             i++;
-    while(i=='\n') i++;    // going down empty lines
+    while(file.at(i)=='\n') i++;    // going down empty lines
 
     for(int j=0;j<numOfTables;j++) {    // creating new tables and pushing them into the Tables vector
         string numOfPlaces;
-        while (file.at(i) != ','){
+        while (file.at(i) != ',' & file.at(i)!='\n'){
             numOfPlaces += file.at(i);
             i++;
         }
@@ -284,8 +304,7 @@ void Restaurant::createTables(int &i, const std::string &file, int numOfTables) 
         tables.push_back(new Table(numberOfPlaces));
         i++;
     }
-    i++;
-    while(i=='\n') i++;    // going down empty lines
+    while(file.at(i)=='\n') i++;    // going down empty lines
 }
 // filling the menu vector
 void Restaurant::createMenu(int &i, const std::string &file){
@@ -293,10 +312,10 @@ void Restaurant::createMenu(int &i, const std::string &file){
     if(file.at(i)=='#')
         while(file.at(i)!='\n')
             i++;
-    while(i=='\n') i++;    // going down empty lines
+    while(file.at(i)=='\n') i++;    // going down empty lines
 
     int id=0;
-    for( i ; i<file.size()-i;i++) {    // creating new menus and pushing them into the Menu vector
+    for( i ; i<file.size();i++) {    // creating new Dishes and pushing them into the Menu vector
         string dishName;
         while(file.at(i)!=','){
             dishName+=file.at(i);
@@ -308,16 +327,16 @@ void Restaurant::createMenu(int &i, const std::string &file){
             type+=file.at(i);
             i++;
         }
+        i++;
         DishType dType=convertDish(type);
         string price;
-        while(file.at(i)!=','){
+        while(file.at(i)!='\n'){
             price+=file.at(i);
             i++;
         }
         int dPrice=stoi(price);
         menu.push_back(*new Dish(id,dishName,dPrice,dType));
         id++;
-        i++;
     }
 }
 
@@ -337,8 +356,10 @@ DishType Restaurant::convertDish(std::string str) {
 Actions Restaurant::convertAct(std::string str) {
     string actionStr;
     int i = 0;
-    while (str.at(i) != ' ')
+    while (i<str.size() && str.at(i) != ' ') {
         actionStr += str.at(i);
+        i++;
+    }
     if (actionStr == "open")
         return OPEN;
     if (actionStr == "order")
