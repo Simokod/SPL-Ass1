@@ -95,11 +95,10 @@ using namespace std;
                         expensivePrice=i->getPrice();
                         expensiveId=i->getId();
                     }
-            if(expensiveId!=-1)         // no spicy dish was found
-            {
-                orders.push_back(expensiveId);
+            if(expensiveId==-1)         // no spicy dish was found
                 ordered=false;
-            }
+            else
+                orders.push_back(expensiveId);
         }
         else    // after the first order: searching for the cheapest beverage
         {

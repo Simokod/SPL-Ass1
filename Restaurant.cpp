@@ -21,8 +21,11 @@ std::string Restaurant::fileToString(fstream &file) {
     char line[256];
     while(file.getline(line, 256))
     {
-        allFile+=line;
-        allFile+="\n";
+        if(line[0]!='#')
+        {
+            allFile+=line;
+            allFile+="\n";
+        }
     }
     return allFile;
 }
@@ -272,28 +275,17 @@ void Restaurant::clear() {
 }
 // the function reads the config file and returns the number of tables in the restaurant
 int Restaurant::readNumOfTables(int &i, const string &file){
-    // skipping first line
-    if(file.at(i)=='#')
-        while(file.at(i)!='\n')
-            i++;
-    while(file.at(i)=='\n') i++;     // going down empty lines
-    // getting number of tables from 2nd line
+    // getting number of tables
     string numOfTables;
     while(file.at(i)!='\n') {
         numOfTables+=file.at(i);
         i++;
     }
-    while(file.at(i)=='\n') i++;    // going down empty lines
+    i++;    // going down empty line
     return stoi(numOfTables);
 }
 // filling the tables vector
 void Restaurant::createTables(int &i, const std::string &file, int numOfTables) {
-    // skipping line of comment
-    if(file.at(i)=='#')
-        while(file.at(i)!='\n')
-            i++;
-    while(file.at(i)=='\n') i++;    // going down empty lines
-
     for(int j=0;j<numOfTables;j++) {    // creating new tables and pushing them into the Tables vector
         string numOfPlaces;
         while (file.at(i) != ',' & file.at(i)!='\n'){
@@ -304,16 +296,9 @@ void Restaurant::createTables(int &i, const std::string &file, int numOfTables) 
         tables.push_back(new Table(numberOfPlaces));
         i++;
     }
-    while(file.at(i)=='\n') i++;    // going down empty lines
 }
 // filling the menu vector
 void Restaurant::createMenu(int &i, const std::string &file){
-    // skipping line of comment
-    if(file.at(i)=='#')
-        while(file.at(i)!='\n')
-            i++;
-    while(file.at(i)=='\n') i++;    // going down empty lines
-
     int id=0;
     for( i ; i<file.size();i++) {    // creating new Dishes and pushing them into the Menu vector
         string dishName;

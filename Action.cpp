@@ -29,7 +29,7 @@ string BaseAction::convertToString(ActionStatus stat) const {
 
 void BaseAction::error(std::string errorMsg) {
     status = ERROR;
-    errorMsg = errorMsg;
+    this->errorMsg = errorMsg;
     cout << errorMsg << endl;
 }
 
@@ -131,9 +131,9 @@ bool OpenTable::isError(Restaurant& restaurant) {
 void OpenTable::setInputStr(string args) { str=args; }
 
 string OpenTable::toString() const{
-    string s=str+" "+convertToString(getStatus())+": ";
+    string s=str+" "+convertToString(getStatus());
     if(getStatus()==ERROR)
-        s+=getErrorMsg();
+        s+=": "+getErrorMsg();
     return s;
 }
 
@@ -151,7 +151,11 @@ void Order::act(Restaurant &restaurant) {
 }
 void Order::setInputStr(string args) { str=args; }
 
-std::string Order::toString() const { return str; }
+std::string Order::toString() const {
+    string s=str+" "+convertToString(getStatus());
+    if(getStatus()==ERROR)
+        s+=": "+getErrorMsg();
+    return s; }
 
 // ---------------------------- Action: Move Customer -----------------------------------------
 
@@ -200,7 +204,12 @@ bool MoveCustomer::isError(Restaurant &restaurant) {
 
 void MoveCustomer::setInputStr(string args) { str=args; }
 
-std::string MoveCustomer::toString() const { return str; }
+std::string MoveCustomer::toString() const {
+    string s=str+" "+convertToString(getStatus());
+    if(getStatus()==ERROR)
+        s+=": "+getErrorMsg();
+    return s;
+}
 
 // ---------------------------- Action: Close  -----------------------------------------
 
@@ -209,32 +218,47 @@ Close::Close(int id): tableId(id), str("close"){}
 
 void Close::act(Restaurant &restaurant) {
     if(restaurant.getNumOfTables()<tableId || !restaurant.getTable(tableId)->isOpen())
-        cout << "Table does not exist or is not open";
+        error("Table does not exist or is not open");
     else{
-        cout << "Table " << tableId << " was closed. Bill is " << restaurant.getTable(tableId)->getBill() << "NIS";
+        cout << "Table " << tableId << " was closed. Bill is " << restaurant.getTable(tableId)->getBill() << "NIS" << endl;
         restaurant.getTable(tableId)->closeTable();
         complete();
     }
 }
 void Close::setInputStr(string args) { str=args; }
 
-std::string Close::toString() const { return str; }
+std::string Close::toString() const {
+    string s=str+" "+convertToString(getStatus());
+    if(getStatus()==ERROR)
+        s+=": "+getErrorMsg();
+    return s;
+}
 
 // ---------------------------- Action: CloseAll  -----------------------------------------
 
 CloseAll::CloseAll()=default;
 
 void CloseAll::act(Restaurant &restaurant) {
-    for (int i=0; i<restaurant.getNumOfTables();i++){
-        cout << "Table " << i << " was closed. Bill is " << restaurant.getTable(i)->getBill() << "NIS /n";
-        restaurant.getTable(i)->closeTable();
-    }
+    BaseAction *close;
+    for (int i=0; i<restaurant.getNumOfTables();i++)
+        if(restaurant.getTable(i)->isOpen())
+        {
+            close=new Close(i);
+            close->act(restaurant);
+            delete close;
+        }
+    close=nullptr;
     restaurant.~Restaurant();
 }
 
 void CloseAll::setInputStr(string args) { str=args; }
 
-std::string CloseAll::toString() const { return "Close All"; }
+std::string CloseAll::toString() const {
+    string s=str+" "+convertToString(getStatus());
+    if(getStatus()==ERROR)
+        s+=": "+getErrorMsg();
+    return s;
+}
 
 // ------------------------------------------  PrintMenu  ------------------------------------------------------
 PrintMenu::PrintMenu() {}
@@ -249,7 +273,12 @@ void PrintMenu::act(Restaurant &restaurant) {
 
 void PrintMenu::setInputStr(string args) { str=args; }
 
-string PrintMenu::toString() const { return str; }
+string PrintMenu::toString() const {
+    string s=str+" "+convertToString(getStatus());
+    if(getStatus()==ERROR)
+        s+=": "+getErrorMsg();
+    return s;
+}
 
 // ------------------------------------------  PrintTableStatus  ------------------------------------------------------
 PrintTableStatus::PrintTableStatus(int id):tableId(id) {}
@@ -275,7 +304,12 @@ void PrintTableStatus::act(Restaurant &restaurant) {
 
 void PrintTableStatus::setInputStr(string args) { str=args; }
 
-std::string PrintTableStatus::toString() const { return str; }
+std::string PrintTableStatus::toString() const {
+    string s=str+" "+convertToString(getStatus());
+    if(getStatus()==ERROR)
+        s+=": "+getErrorMsg();
+    return s;
+}
 
 // ---------------------------- Action: PrintActionsLog  -----------------------------------------
 
@@ -291,7 +325,12 @@ void PrintActionsLog::act(Restaurant &restaurant){
 
 void PrintActionsLog::setInputStr(string args) { str=args; }
 
-std::string PrintActionsLog::toString() const { return str; }
+std::string PrintActionsLog::toString() const {
+    string s=str+" "+convertToString(getStatus());
+    if(getStatus()==ERROR)
+        s+=": "+getErrorMsg();
+    return s;
+}
 
 // ------------------------------------------  BackupRestaurant  ------------------------------------------------------
 BackupRestaurant::BackupRestaurant() {}
@@ -304,7 +343,12 @@ void BackupRestaurant::act(Restaurant &restaurant) {
 
 void BackupRestaurant::setInputStr(string args) { str=args; }
 
-std::string BackupRestaurant::toString() const { return str; }
+std::string BackupRestaurant::toString() const {
+    string s=str+" "+convertToString(getStatus());
+    if(getStatus()==ERROR)
+        s+=": "+getErrorMsg();
+    return s;
+}
 
 // ------------------------------------------  RestoreRestaurant  ------------------------------------------------------
 RestoreResturant::RestoreResturant() {}
@@ -321,4 +365,9 @@ void RestoreResturant::act(Restaurant &restaurant) {
 
 void RestoreResturant::setInputStr(string args) { str=args; }
 
-std::string RestoreResturant::toString() const { return str; }
+std::string RestoreResturant::toString() const {
+    string s=str+" "+convertToString(getStatus());
+    if(getStatus()==ERROR)
+        s+=": "+getErrorMsg();
+    return s;
+}
