@@ -24,7 +24,7 @@ public:
 protected:
     void complete();
     void error(std::string errorMsg);
-    std::string convertToString(ActionStatus stat);
+    std::string convertToString(ActionStatus stat) const;
     std::string getErrorMsg() const;
 private:
     std::string errorMsg;
@@ -53,27 +53,18 @@ private:
 class Order : public BaseAction {
 public:
     Order(int id);
-    Order(Order &other);
-    Order& operator=(const Order &other);
-    Order& operator=(Order &&other);
-    virtual ~Order();
     void act(Restaurant &restaurant);
     std::string toString() const;
     virtual void setInputStr(string args);
 private:
     const int tableId;
     string str;
-    void clear();
 };
 
 
 class MoveCustomer : public BaseAction {
 public:
     MoveCustomer(int src, int dst, int customerId);
-    MoveCustomer(const MoveCustomer &other);
-    MoveCustomer& operator=(const MoveCustomer &other);
-    MoveCustomer& operator=(MoveCustomer &&other);
-    virtual ~MoveCustomer();
     void act(Restaurant &restaurant);
     virtual void setInputStr(string args);
     std::string toString() const;
@@ -82,7 +73,6 @@ private:
     const int srcTable;
     const int dstTable;
     const int id;
-    void clear();
     bool isError(Restaurant &restaurant);
     vector<OrderPair> removeOrders(vector<OrderPair> &orders, int id);
 };

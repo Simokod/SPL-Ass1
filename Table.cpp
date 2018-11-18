@@ -109,7 +109,7 @@ bool Table::isOpen() { return open; }
 int Table::getBill() {
     int bill=0;
     for(int i=0;i<orderList.size();i++)
-        bill+=orderList.at(i).first;
+        bill+=orderList.at(i).second.getPrice();
     return bill;
 }
 // Table destructor

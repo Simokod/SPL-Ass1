@@ -147,14 +147,18 @@ using namespace std;
        } else {
            lastOrderPrice = menu.at(lastOrder).getPrice();
        }
+       bool ordered=false;
        // finding the first ALC Dish in order to do the comparisons
        auto i=menu.begin();
        for( i ; i != menu.end(); i++)
            if (i->getType() == ALC && i->getPrice() > lastOrderPrice) {
                minPrice = i->getPrice();
                minPriceId=i->getId();
+               ordered=true;
                break;
            }
+       if(!ordered)
+           return orders;
        // searching for a cheaper ALC Dish (more expensive than last order)
        for( i ; i != menu.end(); i++)
            if (i->getType() == ALC && i->getPrice()>lastOrderPrice & i->getPrice() < minPrice)

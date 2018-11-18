@@ -18,12 +18,12 @@ void BaseAction::complete() { status = COMPLETED; }
 
 string BaseAction::getErrorMsg() const { return errorMsg; }
 
-string BaseAction::convertToString(ActionStatus stat) {
+string BaseAction::convertToString(ActionStatus stat) const {
     switch(stat)
     {
-        case PENDING: return "pending";
-        case COMPLETED: return "completed";
-        case ERROR: return "error";
+        case PENDING: return "Pending";
+        case COMPLETED: return "Completed";
+        case ERROR: return "Error";
     }
 }
 
@@ -118,66 +118,31 @@ void OpenTable::act(Restaurant &restaurant) {
 
 // the function returns true if the table cannot be opened
 bool OpenTable::isError(Restaurant& restaurant) {
-    bool p1 = restaurant.getNumOfTables() <= tableId;
+    if(restaurant.getNumOfTables() <= tableId)
+        return true;
     int capacity=restaurant.getTable(tableId)->getCapacity();
     int currentCusts=restaurant.getTable(tableId)->getCustomers().size();
     int newCusts=customers.size();
     bool p2 = capacity - currentCusts < newCusts;
     bool p3=restaurant.getTable(tableId)->isOpen();
-    return p1 | p2 | p3;
+    return p2 | p3;
 }
 
 void OpenTable::setInputStr(string args) { str=args; }
 
 string OpenTable::toString() const{
-    return str;
+    string s=str+" "+convertToString(getStatus())+": ";
+    if(getStatus()==ERROR)
+        s+=getErrorMsg();
+    return s;
 }
 
 // ------------------------------------------- Action: Order
 //constructor
 Order::Order(int id):tableId(id),str("order") {}
 
-//Copy Constructor
-Order::Order(Order &other):tableId(other.tableId), str("order") {}
-
-//Copy Operator=
-Order& Order::operator=(const Order &other){
-    if(this!=&other){
-        //deleting the old data
-        clear();
-        /*changing const int, needs to be checked*/
-        int *ptr;
-        ptr=(int*)(&tableId);
-        *ptr=other.tableId;
-    }
-    return *this;
-}
-
-//Move Operator=
-Order& Order::operator=(Order &&other){
-    if(this!=&other){
-        //deleting the old data
-        clear();
-        /*changing const int, needs to be checked*/
-        int *ptr;
-        ptr=(int*)(&tableId);
-        *ptr=other.tableId;
-        other.clear();
-    }
-    return *this;
-}
-
-//destructor
-Order::~Order() { clear();}
-void Order::clear(){
-    int *ptr;
-    ptr=(int*)(&tableId);
-    *ptr=0;
-    str="";
-}
-
 void Order::act(Restaurant &restaurant) {
-    if(!restaurant.getTable(tableId)->isOpen() | restaurant.getNumOfTables()<=tableId)
+    if(restaurant.getNumOfTables()<=tableId || !restaurant.getTable(tableId)->isOpen())
         error("Table does not exist or is not open");
     else {
         restaurant.getTable(tableId)->order(restaurant.getMenu());
@@ -193,58 +158,6 @@ std::string Order::toString() const { return str; }
 //constructor
 MoveCustomer::MoveCustomer(int src, int dst, int customerId): srcTable(src),dstTable(dst),id(customerId),
                                                               str("move") {}
-
-//Copy Constructor
-MoveCustomer::MoveCustomer(const MoveCustomer &other):id(other.id), srcTable(other.srcTable), dstTable(other.dstTable),
-                                                      str("move") {}
-
-//Copy Operator=
-MoveCustomer& MoveCustomer::operator=(const MoveCustomer &other){
-    if(this!=&other){
-        //deleting the old data
-        clear();
-        /*changing const int, needs to be checked*/
-        int *ptr;
-        ptr=(int*)(&id);
-        *ptr=other.id;
-        ptr=(int*)(&srcTable);
-        *ptr=other.srcTable;
-        ptr=(int*)(&dstTable);
-        *ptr=other.dstTable;
-    }
-    return *this;
-}
-
-//Move Operator=
-MoveCustomer& MoveCustomer::operator=(MoveCustomer &&other){
-    if(this!=&other){
-        //deleting the old data
-        clear();
-        /*changing const int, needs to be checked*/
-        int *ptr;
-        ptr=(int*)(&id);
-        *ptr=other.id;
-        ptr=(int*)(&srcTable);
-        *ptr=other.srcTable;
-        ptr=(int*)(&dstTable);
-        *ptr=other.dstTable;
-        other.clear();
-    }
-    return *this;
-}
-
-//destructor
-MoveCustomer::~MoveCustomer() { clear();}
-void MoveCustomer::clear(){
-    int *ptr;
-    ptr=(int*)(&srcTable);
-    *ptr=0;
-    ptr=(int*)(&dstTable);
-    *ptr=0;
-    ptr=(int*)(&id);
-    *ptr=0;
-    str="";
-}
 
 void MoveCustomer::act(Restaurant &restaurant) {
     if(isError(restaurant))
@@ -343,21 +256,21 @@ PrintTableStatus::PrintTableStatus(int id):tableId(id) {}
 
 void PrintTableStatus::act(Restaurant &restaurant) {
     cout << "Table " << tableId << " Status: ";
-    if(restaurant.getTable(tableId)->isOpen()) {
+    Table *t=restaurant.getTable(tableId);
+    if(t->isOpen()) {
         cout << "open" << endl;
         cout << "Customers:" << endl;
-        for (auto i = restaurant.getTable(tableId)->getCustomers().begin();
-             i != restaurant.getTable(tableId)->getCustomers().end(); i++)
+        for (auto i = t->getCustomers().begin(); i != t->getCustomers().end(); i++)
             cout << (*i)->getId() << " " << (*i)->getName() << endl;
         cout << "Orders:" << endl;
-        for (auto i = restaurant.getTable(tableId)->getOrders().begin();
-             i != restaurant.getTable(tableId)->getOrders().end(); i++)
-            cout << i->second.getName() << " " << i->second.getPrice() << " " << i->first << endl;
-        cout << restaurant.getTable(tableId)->getBill() << endl;
+        for (auto i = t->getOrders().begin(); i != t->getOrders().end(); i++)
+            cout << i->second.getName() << " " << i->second.getPrice() << "NIS " << i->first << endl;
+        cout << t->getBill() << "NIS" << endl;
     }
     else
         cout << "closed" << endl;
     complete();
+    t=nullptr;
 }
 
 void PrintTableStatus::setInputStr(string args) { str=args; }
@@ -370,12 +283,8 @@ std::string PrintTableStatus::toString() const { return str; }
 PrintActionsLog::PrintActionsLog():str("print actions log") {}
 
 void PrintActionsLog::act(Restaurant &restaurant){
-    for(int i=0;i<restaurant.getActionsLog().size();i++) {
-        cout << restaurant.getActionsLog().at(i)->toString() << " ";
-        cout << convertToString(getStatus());
-        if(getStatus()==ERROR)
-            cout << ":" << getErrorMsg();
-        cout << endl;
+    for(auto i=restaurant.getActionsLog().begin(); i!=restaurant.getActionsLog().end();i++) {
+        cout << (*i)->toString() << endl;
     }
     complete();
 }
