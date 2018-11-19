@@ -1,8 +1,12 @@
 //
 // Created by simo on 11/9/18.
 //
+
 #include "Restaurant.h"
 #include "Dish.h"
+
+#include <iostream>
+#include <fstream>
 
 using namespace std;
 
@@ -10,7 +14,7 @@ using namespace std;
 Restaurant::Restaurant(const std::string &configFilePath): customersId(0) {
     int index=0;
     fstream file;
-    file.open(configFilePath);
+    file.open(configFilePath, ios::in);
     string theFile=fileToString(file);
     numOfTables=readNumOfTables(index, theFile);
     createTables(index, theFile, numOfTables);
@@ -21,11 +25,8 @@ std::string Restaurant::fileToString(fstream &file) {
     char line[256];
     while(file.getline(line, 256))
     {
-        if(line[0]!='#')
-        {
-            allFile+=line;
-            allFile+="\n";
-        }
+        allFile+=line;
+        allFile+="\n";
     }
     return allFile;
 }
@@ -36,6 +37,8 @@ Restaurant::Restaurant(const Restaurant &other): open(other.open), numOfTables(o
         menu.push_back(other.menu.at(i));
     for(int i=0;i<other.tables.size();i++)      // copying the tables
         tables.push_back(other.tables.at(i)->clone());
+    for(int i=0;i<other.actionsLog.size();i++)  //copying the actions log
+        actionsLog.push_back(other.actionsLog.at(i));
 }
 //Restaurant move constructor
 Restaurant::Restaurant(Restaurant &&other): open(other.open), numOfTables(other.numOfTables),
@@ -44,8 +47,13 @@ Restaurant::Restaurant(Restaurant &&other): open(other.open), numOfTables(other.
         menu.push_back(other.menu.at(i));
     for(int i=0;i<other.tables.size();i++)      // moving the tables
         tables.push_back(other.tables.at(i));
+    for(int i=0;i<other.actionsLog.size();i++)  //copying the actions log
+        actionsLog.push_back(other.actionsLog.at(i));
     other.menu.clear();                         // deleting other menu
+    for(int i=0;i<other.tables.size();i++)
+        delete other.tables.at(i);
     other.tables.clear();                       // deleting other tables
+    other.actionsLog.clear();                   // deleting other actions log
 }
 
 // Restaurant copy assignment operator
@@ -59,6 +67,8 @@ Restaurant& Restaurant::operator=(const Restaurant &other){
             menu.push_back(other.menu.at(i));
         for(int i=0;i<other.tables.size();i++)      // copying other tables
             tables.push_back(other.tables.at(i)->clone());
+        for(int i=0;i<other.actionsLog.size();i++)  //copying the actions log
+            actionsLog.push_back(other.actionsLog.at(i));
     }
     return *this;
 }
@@ -75,7 +85,10 @@ Restaurant& Restaurant::operator=(Restaurant &&other){
         for(int i=0;i<other.tables.size();i++)      // moving the tables
             tables.push_back(other.tables.at(i));
         other.menu.clear();                         // deleting other menu
+        for(int i=0;i<other.tables.size();i++)
+            delete other.tables.at(i);
         other.tables.clear();                       // deleting other tables
+        other.actionsLog.clear();                   // deleting other actions log
     }
     return *this;
 }
@@ -230,7 +243,7 @@ Close* Restaurant::actionClose(std::string s) {
 }
 // returns a CloseAll BaseAction
 CloseAll* Restaurant::actionCloseAll() {
-    return new CloseAll;
+    return new CloseAll();
 }
 // returns a PrintMenu BaseAction
 PrintMenu* Restaurant::actionPrintMenu(std::string s) {
@@ -272,20 +285,32 @@ void Restaurant::clear() {
     for(int i=0;i<tables.size();i++)
         delete tables.at(i);
     tables.clear();
+    actionsLog.clear();
 }
 // the function reads the config file and returns the number of tables in the restaurant
 int Restaurant::readNumOfTables(int &i, const string &file){
-    // getting number of tables
+    // skipping first line
+    if(file.at(i)=='#')
+        while(file.at(i)!='\n')
+            i++;
+    while(file.at(i)=='\n') i++;     // going down empty lines
+    // getting number of tables from 2nd line
     string numOfTables;
     while(file.at(i)!='\n') {
         numOfTables+=file.at(i);
         i++;
     }
-    i++;    // going down empty line
+    while(file.at(i)=='\n') i++;    // going down empty lines
     return stoi(numOfTables);
 }
 // filling the tables vector
 void Restaurant::createTables(int &i, const std::string &file, int numOfTables) {
+    // skipping line of comment
+    if(file.at(i)=='#')
+        while(file.at(i)!='\n')
+            i++;
+    while(file.at(i)=='\n') i++;    // going down empty lines
+
     for(int j=0;j<numOfTables;j++) {    // creating new tables and pushing them into the Tables vector
         string numOfPlaces;
         while (file.at(i) != ',' & file.at(i)!='\n'){
@@ -296,9 +321,16 @@ void Restaurant::createTables(int &i, const std::string &file, int numOfTables) 
         tables.push_back(new Table(numberOfPlaces));
         i++;
     }
+    while(file.at(i)=='\n') i++;    // going down empty lines
 }
 // filling the menu vector
 void Restaurant::createMenu(int &i, const std::string &file){
+    // skipping line of comment
+    if(file.at(i)=='#')
+        while(file.at(i)!='\n')
+            i++;
+    while(file.at(i)=='\n') i++;    // going down empty lines
+
     int id=0;
     for( i ; i<file.size();i++) {    // creating new Dishes and pushing them into the Menu vector
         string dishName;
