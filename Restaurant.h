@@ -11,7 +11,7 @@
 
 extern Restaurant* backup;
 
-enum Actions{OPEN, ORDER, MOVE, CLOSE, CLOSEALL, MENU, STATUS, LOG, BACKUP, RESTORE, WRONG};
+enum Actions{OPEN, ORDER, MOVE, CLOSE, CLOSEALL, MENU, STATUS, LOG, BACKUP, RESTORE};
 
 class Restaurant{
 public:

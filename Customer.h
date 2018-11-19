@@ -14,7 +14,7 @@ public:
     int getId() const;
     virtual Customer* clone()=0;
 
-    virtual ~Customer()=0;
+    virtual ~Customer();
 private:
     const std::string name;
     const int id;

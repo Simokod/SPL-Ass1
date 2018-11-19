@@ -22,7 +22,7 @@ public:
     virtual void act(Restaurant& restaurant)=0;
     virtual std::string toString() const=0;
     virtual BaseAction* clone()=0;
-    virtual ~BaseAction()=0;
+    virtual ~BaseAction();
 protected:
     void complete();
     void error(std::string errorMsg);
@@ -74,10 +74,10 @@ public:
     virtual MoveCustomer* clone();
     virtual ~MoveCustomer();
 private:
-    string str;
     const int srcTable;
     const int dstTable;
     const int id;
+    string str;
     bool isError(Restaurant &restaurant);
     vector<OrderPair> removeOrders(vector<OrderPair> &orders, int id);
 };

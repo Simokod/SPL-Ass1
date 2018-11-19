@@ -5,7 +5,7 @@
 #include "Customer.h"
 using namespace std;
 
-    Customer::Customer(string c_name, int c_id): name(c_name), id(c_id){}
+    Customer::Customer(string c_name, int c_id): name(c_name), id(c_id) {}
 
     int Customer::getId() const {
         const int &_id=id;
@@ -17,6 +17,7 @@ using namespace std;
         return _name;
     }
 
+    Customer::~Customer()=default;
 //----------------------------------------------Vegetarian Customer--------------------------------------
     VegetarianCustomer::VegetarianCustomer(string name, int id): Customer(name, id) {}
 
