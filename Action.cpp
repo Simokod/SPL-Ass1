@@ -125,6 +125,8 @@ std::string Order::toString() const {
     return s;
 }
     Order* Order::clone() { return new Order(*this); }
+
+    Order::~Order()=default;
 // ---------------------------- Action: Move Customer -----------------------------------------
 
 //constructor
@@ -180,6 +182,8 @@ std::string MoveCustomer::toString() const {
 }
 
 MoveCustomer* MoveCustomer::clone() { return new MoveCustomer(*this); }
+
+MoveCustomer::~MoveCustomer()=default;
 // ---------------------------- Action: Close  -----------------------------------------
 
 //Constructor
@@ -206,6 +210,8 @@ std::string Close::toString() const {
 }
 
 Close* Close::clone(){ return new Close(*this); }
+
+Close::~Close()=default;
 // ---------------------------- Action: CloseAll  -----------------------------------------
 
 CloseAll::CloseAll()=default;
@@ -232,6 +238,8 @@ std::string CloseAll::toString() const {
 }
 CloseAll* CloseAll::clone() { return new CloseAll(*this); }
 
+CloseAll::~CloseAll()=default;
+
 // ------------------------------------------  PrintMenu  ------------------------------------------------------
 PrintMenu::PrintMenu()=default;
 
@@ -253,6 +261,7 @@ string PrintMenu::toString() const {
 }
 PrintMenu* PrintMenu::clone() { return new PrintMenu(*this);}
 
+PrintMenu::~PrintMenu()=default;
 // ------------------------------------------  PrintTableStatus  ------------------------------------------------------
 PrintTableStatus::PrintTableStatus(int id):tableId(id) {}
 
@@ -286,6 +295,7 @@ std::string PrintTableStatus::toString() const {
 
 PrintTableStatus* PrintTableStatus::clone() { return new PrintTableStatus(*this); }
 
+PrintTableStatus::~PrintTableStatus()=default;
 // ---------------------------- Action: PrintActionsLog  -----------------------------------------
 
 //Constructor
@@ -309,6 +319,7 @@ std::string PrintActionsLog::toString() const {
 
 PrintActionsLog* PrintActionsLog::clone() { return new PrintActionsLog(*this); }
 
+PrintActionsLog::~PrintActionsLog()=default;
 // ------------------------------------------  BackupRestaurant  ------------------------------------------------------
 BackupRestaurant::BackupRestaurant()=default;
 
@@ -328,15 +339,15 @@ std::string BackupRestaurant::toString() const {
 
 BackupRestaurant* BackupRestaurant::clone() { return new BackupRestaurant(*this); }
 
+BackupRestaurant::~BackupRestaurant()=default;
 // ------------------------------------------  RestoreRestaurant  ------------------------------------------------------
 RestoreResturant::RestoreResturant()=default;
 
 void RestoreResturant::act(Restaurant &restaurant) {
-    //extern Restaurant *backup;
     if(backup==nullptr)
         error("No backup available");
     else {
-        restaurant = std::move(*backup);
+        restaurant = *backup;
         complete();
     }
 }
@@ -351,3 +362,5 @@ std::string RestoreResturant::toString() const {
 }
 
 RestoreResturant* RestoreResturant::clone() { return new RestoreResturant(*this); }
+
+RestoreResturant::~RestoreResturant()=default;

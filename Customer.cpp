@@ -51,6 +51,8 @@ using namespace std;
     }
 
     VegetarianCustomer* VegetarianCustomer::clone() { return new VegetarianCustomer(*this); }
+
+    VegetarianCustomer::~VegetarianCustomer()=default;
 //----------------------------------------------Cheap Customer--------------------------------------
     CheapCustomer::CheapCustomer(string name, int id): Customer(name, id), ordered(false) {}
 
@@ -61,7 +63,7 @@ using namespace std;
             auto i = menu.begin();
             int cheapest=i->getPrice();
             int cheapestId=0;
-            for( i ;i!=menu.end();i++)
+            for( i=i ;i!=menu.end();i++)
                 if(i->getPrice()<cheapest)
                 {
                     cheapest=i->getPrice();
@@ -81,6 +83,9 @@ using namespace std;
     }
 
     CheapCustomer* CheapCustomer::clone() { return new CheapCustomer(*this); }
+
+    CheapCustomer::~CheapCustomer()=default;
+
 //----------------------------------------------Spicy Customer--------------------------------------
     SpicyCustomer::SpicyCustomer(string name, int id): Customer(name, id), ordered(false) {}
 
@@ -91,7 +96,7 @@ using namespace std;
             auto i = menu.begin();
             int expensivePrice=0;
             int expensiveId=-1;
-            for (i ; i != menu.end(); i++)
+            for (i=i ; i != menu.end(); i++)
                 if (i->getType() == SPC)
                     if(i->getPrice()>expensivePrice)
                     {
@@ -109,14 +114,14 @@ using namespace std;
             int minPrice;
             int minPriceId=-1;
             auto i=menu.begin();
-            for( i ; i != menu.end(); i++)
+            for( i=i ; i != menu.end(); i++)
                 if (i->getType() == BVG) {
                     minPrice = i->getPrice();
                     minPriceId=i->getId();
                     break;
                 }
             // searching for a cheaper BVG Dish
-            for ( i ; i != menu.end(); i++)
+            for ( i=i ; i != menu.end(); i++)
                 if(i->getType() == BVG)
                     if(i->getPrice()<minPrice) {
                         minPrice=i->getPrice();
@@ -136,6 +141,9 @@ using namespace std;
     }
 
     SpicyCustomer* SpicyCustomer::clone() { return new SpicyCustomer(*this); }
+
+    SpicyCustomer::~SpicyCustomer()=default;
+
 //----------------------------------------------Alchoholic Customer--------------------------------------
     AlchoholicCustomer::AlchoholicCustomer(string name, int id): Customer(name, id), lastOrder(-1) {}
 
@@ -152,7 +160,7 @@ using namespace std;
        bool ordered=false;
        // finding the first ALC Dish in order to do the comparisons
        auto i=menu.begin();
-       for( i ; i != menu.end(); i++)
+       for( i=i ; i != menu.end(); i++)
            if (i->getType() == ALC && i->getPrice() > lastOrderPrice) {
                minPrice = i->getPrice();
                minPriceId=i->getId();
@@ -162,8 +170,8 @@ using namespace std;
        if(!ordered)
            return orders;
        // searching for a cheaper ALC Dish (more expensive than last order)
-       for( i ; i != menu.end(); i++)
-           if (i->getType() == ALC && i->getPrice()>lastOrderPrice & i->getPrice() < minPrice)
+       for( i=i ; i != menu.end(); i++)
+           if (i->getType() == ALC && (i->getPrice()>lastOrderPrice) & (i->getPrice() < minPrice))
            {
                minPrice=i->getPrice();
                minPriceId=i->getId();
@@ -182,3 +190,5 @@ using namespace std;
     }
 
     AlchoholicCustomer* AlchoholicCustomer::clone() { return new AlchoholicCustomer(*this); }
+
+    AlchoholicCustomer::~AlchoholicCustomer()=default;

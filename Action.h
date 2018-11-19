@@ -22,6 +22,7 @@ public:
     virtual void act(Restaurant& restaurant)=0;
     virtual std::string toString() const=0;
     virtual BaseAction* clone()=0;
+    virtual ~BaseAction()=0;
 protected:
     void complete();
     void error(std::string errorMsg);
@@ -57,6 +58,7 @@ public:
     std::string toString() const;
     virtual void setInputStr(string args);
     virtual Order* clone();
+    virtual ~Order();
 private:
     const int tableId;
     string str;
@@ -70,6 +72,7 @@ public:
     virtual void setInputStr(string args);
     std::string toString() const;
     virtual MoveCustomer* clone();
+    virtual ~MoveCustomer();
 private:
     string str;
     const int srcTable;
@@ -87,6 +90,7 @@ public:
     virtual void setInputStr(string args);
     std::string toString() const;
     virtual Close* clone();
+    virtual ~Close();
 private:
     string str;
     const int tableId;
@@ -101,6 +105,7 @@ public:
     std::string toString() const;
     virtual void setInputStr(string args);
     virtual CloseAll* clone();
+    virtual ~CloseAll();
 private:
     string str;
 };
@@ -113,6 +118,7 @@ public:
     virtual void setInputStr(string args);
     std::string toString() const;
     virtual PrintMenu* clone();
+    virtual ~PrintMenu();
 private:
     string str;
 };
@@ -125,6 +131,7 @@ public:
     virtual void setInputStr(string args);
     std::string toString() const;
     virtual PrintTableStatus* clone();
+    virtual ~PrintTableStatus();
 private:
     const int tableId;
     string str;
@@ -138,6 +145,7 @@ public:
     std::string toString() const;
     virtual void setInputStr(string args);
     virtual PrintActionsLog* clone();
+    virtual ~PrintActionsLog();
 private:
     string str;
 };
@@ -150,6 +158,7 @@ public:
     virtual void setInputStr(string args);
     std::string toString() const;
     virtual BackupRestaurant* clone();
+    virtual ~BackupRestaurant();
 private:
     string str;
 };
@@ -162,6 +171,7 @@ public:
     virtual void setInputStr(string args);
     std::string toString() const;
     virtual RestoreResturant* clone();
+    virtual ~RestoreResturant();
 private:
     string str;
 };
