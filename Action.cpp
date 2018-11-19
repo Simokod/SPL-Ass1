@@ -248,7 +248,6 @@ void CloseAll::act(Restaurant &restaurant) {
             delete close;
         }
     close=nullptr;
-    restaurant.~Restaurant();
 }
 
 void CloseAll::setInputStr(string args) { str=args; }
@@ -294,7 +293,7 @@ void PrintTableStatus::act(Restaurant &restaurant) {
         cout << "Orders:" << endl;
         for (auto i = t->getOrders().begin(); i != t->getOrders().end(); i++)
             cout << i->second.getName() << " " << i->second.getPrice() << "NIS " << i->first << endl;
-        cout << t->getBill() << "NIS" << endl;
+        cout << "Current Bill: " << t->getBill() << "NIS" << endl;
     }
     else
         cout << "closed" << endl;

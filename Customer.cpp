@@ -30,13 +30,16 @@ using namespace std;
             }
         if(orders.size()==0) return orders; // no vegeterian dish - no order at all
         // adding the most expensive beverage dish to the order
-        int expensive=0;
+        int maxPrice=0;
+        int expensiveId;
         for (auto i = menu.begin(); i != menu.end(); ++i)
             if(i->getType()==BVG)
-                if(i->getPrice()>expensive){
-                    orders.push_back(i->getId());
-                    break;
+                if(i->getPrice()>maxPrice){
+                    maxPrice=i->getPrice();
+                    expensiveId=i->getId();
                 }
+        if(maxPrice!=0)
+            orders.push_back(expensiveId);
         return orders;
     }
 
