@@ -8,7 +8,7 @@ using namespace std;
 
 //Restaurant constructor
 Restaurant::Restaurant(const std::string &configFilePath): customersId(0) {
-    int index=0;
+    unsigned long index=0;
     fstream file;
     file.open(configFilePath);
     string theFile=fileToString(file);
@@ -37,7 +37,7 @@ Restaurant::Restaurant(const Restaurant &other): open(other.open), numOfTables(o
     for(int i=0;i<other.tables.size();i++)      // copying the tables
         tables.push_back(other.tables.at(i)->clone());
     for(int i=0;i<other.actionsLog.size();i++)  //copying the actions log
-        actionsLog.push_back(other.actionsLog.at(i));
+        actionsLog.push_back(other.actionsLog.at(i)->clone());
 }
 //Restaurant move constructor
 Restaurant::Restaurant(Restaurant &&other): open(other.open), numOfTables(other.numOfTables),
@@ -49,8 +49,6 @@ Restaurant::Restaurant(Restaurant &&other): open(other.open), numOfTables(other.
     for(int i=0;i<other.actionsLog.size();i++)  //copying the actions log
         actionsLog.push_back(other.actionsLog.at(i));
     other.menu.clear();                         // deleting other menu
-    for(int i=0;i<other.tables.size();i++)
-        delete other.tables.at(i);
     other.tables.clear();                       // deleting other tables
     other.actionsLog.clear();                   // deleting other actions log
 }
@@ -67,7 +65,7 @@ Restaurant& Restaurant::operator=(const Restaurant &other) {
         for (int i = 0; i < other.tables.size(); i++)      // copying other tables
             tables.push_back(other.tables.at(i)->clone());
         for (int i = 0; i < other.actionsLog.size(); i++)  //copying the actions log
-            actionsLog.push_back(other.actionsLog.at(i));
+            actionsLog.push_back(other.actionsLog.at(i)->clone());
         return *this;
     }
 }
@@ -78,16 +76,18 @@ Restaurant& Restaurant::operator=(Restaurant &&other) {
         numOfTables=other.numOfTables;
         open = other.open;
         customersId=other.customersId;
-        // delete other
+        // moving other into this
         for(int i=0;i<other.menu.size();i++)        // moving the menu
             menu.push_back(other.menu.at(i));
+        other.menu.clear();                         // deleting other menu
+
         for(int i=0;i<other.tables.size();i++)      // moving the tables
             tables.push_back(other.tables.at(i));
-        other.menu.clear();                         // deleting other menu
-        for(int i=0;i<other.tables.size();i++)
-            delete other.tables.at(i);
-        other.tables.clear();                       // deleting other tables
-        other.actionsLog.clear();                   // deleting other actions log
+        other.tables.clear();                       // deleting other pointers
+
+        for(int i=0;i<other.actionsLog.size();i++)  // moving other actions log
+            actionsLog.push_back(other.actionsLog.at(i));
+        other.actionsLog.clear();                   // deleting other pointers
     }
     return *this;
 }
@@ -148,6 +148,7 @@ void Restaurant::start() {
                 action=actionRestoreRestaurant(s);
                 action->act(*this);
                 break;
+            default: break;
         }
         actionsLog.push_back(action);
         cout << "Please enter command" << endl;
@@ -157,8 +158,8 @@ void Restaurant::start() {
     action->act(*this);
 }
 // returns an OpenTable BaseAction
-OpenTable* Restaurant::actionOpenTable(const std::string s) {
-    int i=5;
+OpenTable* Restaurant::actionOpenTable(std::string &s) {
+    unsigned long i=5;
     string tableIdStr;
     while(s.at(i)!=' ') {            // reading table ID
         tableIdStr += s.at(i);
@@ -196,7 +197,7 @@ OpenTable* Restaurant::actionOpenTable(const std::string s) {
     return action;
 }
 // returns an Order BaseAction
-Order* Restaurant::actionOrder(std::string s) {
+Order* Restaurant::actionOrder(std::string &s) {
     string tableIdStr;
     for(int i=6;i<s.size();i++)
         tableIdStr+=s.at(i);
@@ -206,9 +207,9 @@ Order* Restaurant::actionOrder(std::string s) {
     return action;
 }
 // returns a Move BaseAction
-MoveCustomer* Restaurant::actionMove(std::string s) {
+MoveCustomer* Restaurant::actionMove(std::string &s) {
     string srcStr, dstStr, customerIdStr;
-    int i=5;
+    unsigned long i=5;
     while(s.at(i)!=' '){            // reading source table id
         srcStr+=s.at(i);
         i++;
@@ -231,7 +232,7 @@ MoveCustomer* Restaurant::actionMove(std::string s) {
     return action;
 }
 // returns a Close BaseAction
-Close* Restaurant::actionClose(std::string s) {
+Close* Restaurant::actionClose(std::string &s) {
     string tableIdStr;
     for(int i=6;i<s.size();i++)
         tableIdStr+=s.at(i);
@@ -245,13 +246,13 @@ CloseAll* Restaurant::actionCloseAll() {
     return new CloseAll;
 }
 // returns a PrintMenu BaseAction
-PrintMenu* Restaurant::actionPrintMenu(std::string s) {
+PrintMenu* Restaurant::actionPrintMenu(std::string &s) {
     PrintMenu *action=new PrintMenu();
     action->setInputStr(s);
     return action;
 }
 // returns a PrintTableStatus BaseAction
-PrintTableStatus* Restaurant::actionPrintTableStatus(std::string s) {
+PrintTableStatus* Restaurant::actionPrintTableStatus(std::string &s) {
     string tableIdStr;
     for(int i=7;i<s.size();i++)
         tableIdStr+=s.at(i);
@@ -261,19 +262,19 @@ PrintTableStatus* Restaurant::actionPrintTableStatus(std::string s) {
     return action;
 }
 // returns a PrintActionsLog BaseAction
-PrintActionsLog* Restaurant::actionPrintActionsLog(std::string s) {
+PrintActionsLog* Restaurant::actionPrintActionsLog(std::string &s) {
     PrintActionsLog *action=new PrintActionsLog();
     action->setInputStr(s);
     return action;
 }
 // returns a BackUpRestaurant BaseAction
-BackupRestaurant* Restaurant::actionBackupRestaurant(std::string s) {
+BackupRestaurant* Restaurant::actionBackupRestaurant(std::string &s) {
     BackupRestaurant *action=new BackupRestaurant();
     action->setInputStr(s);
     return action;
 }
 // returns a RestoreRestaurant BaseAction
-RestoreResturant* Restaurant::actionRestoreRestaurant(std::string s) {
+RestoreResturant* Restaurant::actionRestoreRestaurant(std::string &s) {
     RestoreResturant *action=new RestoreResturant();
     action->setInputStr(s);
     return action;
@@ -281,12 +282,15 @@ RestoreResturant* Restaurant::actionRestoreRestaurant(std::string s) {
 //Assistant functions
 void Restaurant::clear() {
     menu.clear();
-    for(int i=0;i<tables.size();i++)
+    for(unsigned long i=0;i<tables.size();i++)
         delete tables.at(i);
     tables.clear();
+    for(unsigned long i=0;i<actionsLog.size();i++)
+        delete actionsLog.at(i);
+    actionsLog.clear();
 }
 // the function reads the config file and returns the number of tables in the restaurant
-int Restaurant::readNumOfTables(int &i, const string &file){
+int Restaurant::readNumOfTables(unsigned long &i, const string &file){
     // getting number of tables
     string numOfTables;
     while(file.at(i)!='\n') {
@@ -297,8 +301,8 @@ int Restaurant::readNumOfTables(int &i, const string &file){
     return stoi(numOfTables);
 }
 // filling the tables vector
-void Restaurant::createTables(int &i, const std::string &file, int numOfTables) {
-    for(int j=0;j<numOfTables;j++) {    // creating new tables and pushing them into the Tables vector
+void Restaurant::createTables(unsigned long &i, const std::string &file, unsigned long numOfTables) {
+    for(unsigned long j=0;j<numOfTables;j++) {    // creating new tables and pushing them into the Tables vector
         string numOfPlaces;
         while (file.at(i) != ',' & file.at(i)!='\n'){
             numOfPlaces += file.at(i);
@@ -310,7 +314,7 @@ void Restaurant::createTables(int &i, const std::string &file, int numOfTables) 
     }
 }
 // filling the menu vector
-void Restaurant::createMenu(int &i, const std::string &file){
+void Restaurant::createMenu(unsigned long &i, const std::string &file){
     int id=0;
     for( i ; i<file.size();i++) {    // creating new Dishes and pushing them into the Menu vector
         string dishName;
@@ -352,7 +356,7 @@ DishType Restaurant::convertDish(std::string str) {
 // converting input to an action
 Actions Restaurant::convertAct(std::string str) {
     string actionStr;
-    int i = 0;
+    unsigned long i = 0;
     while (i<str.size() && str.at(i) != ' ') {
         actionStr += str.at(i);
         i++;

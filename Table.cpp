@@ -12,9 +12,8 @@ using namespace std;
 Table::Table(int t_capacity): capacity(t_capacity), open(false) {}
 
 // Table copy constructor
-Table::Table(const Table &other): capacity(other.getCapacity()), open(other.open) {
-    // copying other customersList
-    for (int i = 0; i < getCustomers().size(); i++)
+Table::Table(const Table &other): capacity(other.capacity), open(other.open) {
+    for (int i = 0; i < other.customersList.size(); i++)
         customersList.push_back(other.customersList.at(i)->clone());
     // copying other orderList
     for (int i = 0; i < other.orderList.size(); i++)

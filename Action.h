@@ -21,6 +21,7 @@ public:
     virtual void setInputStr(string args)=0;
     virtual void act(Restaurant& restaurant)=0;
     virtual std::string toString() const=0;
+    virtual BaseAction* clone()=0;
 protected:
     void complete();
     void error(std::string errorMsg);
@@ -36,12 +37,11 @@ public:
     OpenTable(int id, std::vector<Customer *> &customersList);      // Constructor
     OpenTable(const OpenTable &other);                              // Copy Constructor
     OpenTable(OpenTable &&other);                                   // Move Constructor
-    OpenTable& operator=(const OpenTable &other);                   // Copy Operator=
-    OpenTable& operator=(OpenTable &&other);                        // Move Operator=
     virtual ~OpenTable();                                           // Destructor
     void act(Restaurant &restaurant);
     virtual void setInputStr(string args);
     std::string toString() const;
+    virtual OpenTable* clone();
 private:
     bool isError(Restaurant &restaurant);
     void clear();
@@ -56,6 +56,7 @@ public:
     void act(Restaurant &restaurant);
     std::string toString() const;
     virtual void setInputStr(string args);
+    virtual Order* clone();
 private:
     const int tableId;
     string str;
@@ -68,6 +69,7 @@ public:
     void act(Restaurant &restaurant);
     virtual void setInputStr(string args);
     std::string toString() const;
+    virtual MoveCustomer* clone();
 private:
     string str;
     const int srcTable;
@@ -84,6 +86,7 @@ public:
     void act(Restaurant &restaurant);
     virtual void setInputStr(string args);
     std::string toString() const;
+    virtual Close* clone();
 private:
     string str;
     const int tableId;
@@ -97,6 +100,7 @@ public:
     void act(Restaurant &restaurant);
     std::string toString() const;
     virtual void setInputStr(string args);
+    virtual CloseAll* clone();
 private:
     string str;
 };
@@ -108,6 +112,7 @@ public:
     void act(Restaurant &restaurant);
     virtual void setInputStr(string args);
     std::string toString() const;
+    virtual PrintMenu* clone();
 private:
     string str;
 };
@@ -119,6 +124,7 @@ public:
     void act(Restaurant &restaurant);
     virtual void setInputStr(string args);
     std::string toString() const;
+    virtual PrintTableStatus* clone();
 private:
     const int tableId;
     string str;
@@ -131,6 +137,7 @@ public:
     void act(Restaurant &restaurant);
     std::string toString() const;
     virtual void setInputStr(string args);
+    virtual PrintActionsLog* clone();
 private:
     string str;
 };
@@ -142,6 +149,7 @@ public:
     void act(Restaurant &restaurant);
     virtual void setInputStr(string args);
     std::string toString() const;
+    virtual BackupRestaurant* clone();
 private:
     string str;
 };
@@ -153,6 +161,7 @@ public:
     void act(Restaurant &restaurant);
     virtual void setInputStr(string args);
     std::string toString() const;
+    virtual RestoreResturant* clone();
 private:
     string str;
 };
