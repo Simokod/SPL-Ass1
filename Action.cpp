@@ -167,7 +167,11 @@ bool MoveCustomer::isError(Restaurant &restaurant) {
     bool p2=!restaurant.getTable(srcTable)->isOpen();
     bool p3=!restaurant.getTable(dstTable)->isOpen();
     bool p4=(unsigned long)restaurant.getTable(dstTable)->getCapacity() == restaurant.getTable(dstTable)->getCustomers().size();
-    return p1 | p2 | p3 | p4;
+    bool p5=true;
+    for(unsigned long i=0;i<restaurant.getTable(srcTable)->getCustomers().size();i++)
+        if(restaurant.getTable(srcTable)->getCustomers().at(i)->getId()==id)
+            p5 = false;
+    return p1 | p2 | p3 | p4 | p5;
 }
 
 void MoveCustomer::setInputStr(string args) { str=args; }
